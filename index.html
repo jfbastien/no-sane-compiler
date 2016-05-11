@@ -74,6 +74,19 @@ void two() {
   </code></pre>
     <aside class="notes"><p>Adds atomicity but cannot hinder forward progress: correct.</p></aside>
   </section>
+  <section><h1>Similar example</h1></section>
+  <section><pre><code class="c++" data-noescape>
+std::atomic&lt;int&gt; x;
+void inc(int val) {
+  x += 1;
+  x += val;
+}
+  </code></pre></section>
+  <section><pre><code class="x86asm" data-noescape>
+_Z3inci:
+  lock incl x(%rip)
+  lock addl %edi, x(%rip)
+  </code></pre></section>
 </section>
 
 
