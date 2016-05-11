@@ -257,6 +257,54 @@ do {
 </section>
 
 <section>
+  <section>
+    <h2>"Normal" compiler optimizations</h2>
+    <p class="fragment">Dead store elimination?</p>
+    <p class="fragment">Strength reduction?</p>
+    <aside class="notes">Careful: avoid doing so across synchronization points (other thread of execution can observe or modify memory, which means that the traditional optimizations have to consider more intervening instructions). DSO: can't just prove atomic store post-dominates and aliases another to eliminate the other store.</aside>
+  </section>
+  <section>
+    <h2><code class="c++">relaxed</code> optimization</h2>
+    <pre class="fragment"><code class="c++" data-noescape>
+std::atomic&lt;int&gt; x, y;
+void relaxed() {
+  x.fetch_add(1, std::memory_order_relaxed);
+  y.fetch_add(1, std::memory_order_relaxed);
+  x.fetch_add(1, std::memory_order_relaxed);
+  y.fetch_add(1, std::memory_order_relaxed);
+}
+    </code></pre>
+    <pre class="fragment"><code class="c++" data-noescape>
+std::atomic&lt;int&gt; x, y;
+void relaxed() {
+  x.fetch_add(2, std::memory_order_relaxed);
+  y.fetch_add(2, std::memory_order_relaxed);
+}
+    </code></pre>
+    <aside class="notes">Not aware of compilers which do this.</aside>
+  </section>
+  <section>
+    <h2>Disabling reordering / fusing?</h2>
+    <ul>
+      <li class="fragment"><code class="c++">asm volatile("":::"memory");</code><code class="fragment c++"> // eek!</code></li>
+      <li class="fragment"><code class="c++">std::atomic_signal_fence();</code><code class="fragment c++"> // wat?</code></li>
+      <li class="fragment">Use <code class="c++">volatile</code>? <strong class="fragment">NO!</strong></li>
+      <li class="fragment">Don't use <code class="c++">relaxed</code>?</li>
+    </ul>
+  </section>
+  <section>
+    <h2>Moar!</h2>
+    <ul>
+      <li class="fragment">Tag "non-atomic" functions, optimize around them</li>
+      <li class="fragment">Interference-free regions</li>
+      <li class="fragment">Optimize fence positioning</li>
+      <li class="fragment">etc.</li>
+    </ul>
+    <aside class="notes">Compilers already know about "read-only" functions.</aside>
+  </section>
+</section>
+
+<section>
   <h1>Sane Compilers Should Optimize Atomics</h1>
   <p>and you should use atomics</p>
   <p>Details &amp; references: <a href="https://github.com/jfbastien/no-sane-compiler">github.com/jfbastien/no-sane-compiler</a></p>
