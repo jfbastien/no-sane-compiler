@@ -4,7 +4,7 @@
                 <meta charset="utf-8">
                 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
 
-                <title>reveal.js</title>
+                <title>No sane compiler would optimize atomics</title>
 
                 <link rel="stylesheet" href="css/reveal.css">
                 <link rel="stylesheet" href="css/theme/black.css">
@@ -103,7 +103,7 @@ bool silly(std::atomic&lt;T&gt; *x, T expected, T desired) {
   return x-&gt;compare_exchange_strong(expected, desired);
 }
   </code></pre>
-  <aside class="notes"><p>Generic code ends up with interesting cases such as these. bool is usually a flag... but returning it depends on ABI!</p></aside>
+  <aside class="notes"><p>Generic code ends up with interesting cases such as these. bool is usually a flag… but returning it depends on ABI!</p></aside>
   </section>
   <section>
     <h2>A tricky one</h2>
@@ -124,6 +124,44 @@ bool optme(std::atomic&lt;T&gt; *x, T desired) {
   </code></pre>
     <p class="fragment"><small>† compiler: mark transformed load as <em>release sequence</em> <sup>‡</sup></small></p>
     <p class="fragment"><small>‡ as defined in section 1.10 of the C++ standard</small></p>
+  </section>
+  <section>
+    <h2>Stronger, faster</h2>
+  <pre class="fragment"><code class="c++" data-noescape>
+template&lt;typename T&gt;
+T optmetoo(std::atomic&lt;T&gt; *x, T y) {
+  T z = x-&gt;load();
+  x-&gt;store(y);
+  return z;
+}
+  </code></pre>
+  <pre class="fragment"><code class="c++" data-noescape>
+template&lt;typename T&gt;
+T optmetoo(std::atomic&lt;T&gt; *x, T y) {
+  return x-&gt;exchange(y);
+}
+  </code></pre>
+    <h2 class="fragment">better?</h2>
+    <aside class="notes"><p>May not always pay off: architectures with weaker memory models may benefit from having write-after-read operations to the same location instead of having an atomic exchange.</p></aside>
+  </section>
+  <section>
+    <h2>Moar!</h2>
+    <p class="fragment">Inlining and constant propagation</p>
+    <p class="fragment"><code class="c++">atomic&lt;T&gt;::fetch_and(~(T)0)</code> → <code class="c++">atomic&lt;T&gt;::load()</code></p>
+    <p class="fragment">Same for <code class="c++">fetch_or(0)</code> and <code class="c++">fetch_xor(0)</code></p>
+    <p class="fragment"><code class="c++">atomic&lt;T&gt;::fetch_and(0)</code> → <code class="c++">atomic&lt;T&gt;::store(0)</code></p>
+  </section>
+  <section>
+    <h2>Takeaway</h2>
+    <p class="fragment">If simple things are hard…</p>
+    <p class="fragment">…is your inline assembly correct?</p>
+    <p class="fragment">…will it remain correct?</p>
+    <p class="fragment">Do you trust your compiler?</p>
+    <aside class="notes"><p>Sorry to say, you're already trusting your compiler (or deluding yourself).</p></aside>
+  </section>
+  <section>
+    <p>What if the compiler emits suboptimal code?</p>
+    <h2 class="fragment">File a bug!</h2>
   </section>
 </section>
 
