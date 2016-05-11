@@ -33,15 +33,23 @@
   <section>
     <code class="c++">false</code>
     <aside class="notes">
-      <p>Compilers do optimize atomics, memory accesses around atomics, and
-        utilize architecture-specific knowledge. My hobby is to encourage
-        compilers to do more of this, programmers to rely on it, and hardware
-        vendors to give us new atomic toys to optimize with. Oh, and standardize
-        yet more close-to-the-metal concurrency and parallelism tools.</p>
-      <p>But, you say, surely volatile always means volatile, there’s nothing
-        wrong with my benign races, nothing could even go wrong with
-        non-temporal accesses, and who needs 6 memory orderings anyways‽ I’m
-        glad you asked, let me tell you about my hobby…</p>
+      <p>Compilers do optimize atomics, memory accesses around atomics, and utilize architecture-specific knowledge. My hobby is to encourage compilers to do more of this, programmers to rely on it, and hardware vendors to give us new atomic toys to optimize with. Oh, and standardize yet more close-to-the-metal concurrency and parallelism tools.</p>
+      <p>But, you say, surely volatile always means volatile, there’s nothing wrong with my benign races, nothing could even go wrong with non-temporal accesses, and who needs 6 memory orderings anyways‽ I’m glad you asked, let me tell you about my hobby…</p>
+    </aside>
+  </section>
+</section>
+
+<section>
+  <section>
+    <h1><em>as-if</em></h1>
+    <p class="fragment"><strong>more atomic</strong>: don’t violate forward progress</p>
+    <p class="fragment"><strong>less atomic</strong>: don’t add non-benign race which weren’t already present</p>
+  </section>
+  <section>
+    <p>Put another way</p>
+    <p>correct programs must work under all executions an implementation is allowed to create</p>
+    <aside class="notes">
+      <p>Keep in mind: compilers optimize code that compiler developers see and think are worth optimizing. We’re not trying to trip you!</p>
     </aside>
   </section>
 </section>
