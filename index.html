@@ -54,6 +54,27 @@
   </section>
 </section>
 
+<section>
+  <section><h1>A simple example</h1></section>
+  <section><pre><code class="c++" data-noescape>
+void inc(std::atomic&lt;int&gt; *y) {
+  *y += 1;
+}
+std::atomic&lt;int&gt; x;
+void two() {
+  inc(&x);
+  inc(&x);
+}
+  </code></pre></section>
+  <section><pre><code class="c++" data-noescape>
+std::atomic&lt;int&gt; x;
+void two() {
+  x += 2;
+}
+  </code></pre></section>
+</section>
+
+
                         </div>
                 </div>
 
