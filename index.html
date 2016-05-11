@@ -87,7 +87,7 @@ _Z3inci:
   lock incl x(%rip)
   lock addl %edi, x(%rip)
   </code></pre>
-  <aside class="notes"><p>Not going to win a Turing award with this: `inc r/m` versus `add r/m, r`; both with lock prefix; inc doesn't set carry (sometimes partial flag stall); both 3 bytes; one less register; check out Agner for μops / latency, lock prefix makes this moot. Maybe the compiler would know better after all?</p></aside>
+  <aside class="notes"><p>Not going to win a Turing award with this: `inc r/m` versus `add r/m, r`; both with lock prefix; inc doesn’t set carry (sometimes partial flag stall); both 3 bytes; one less register; check out Agner for μops / latency, lock prefix makes this moot. Maybe the compiler would know better after all?</p></aside>
   </section>
   <section><h2>Opportunities through inlining</h2>
   <pre class="fragment"><code class="c++" data-noescape>
@@ -157,11 +157,102 @@ T optmetoo(std::atomic&lt;T&gt; *x, T y) {
     <p class="fragment">…is your inline assembly correct?</p>
     <p class="fragment">…will it remain correct?</p>
     <p class="fragment">Do you trust your compiler?</p>
-    <aside class="notes"><p>Sorry to say, you're already trusting your compiler (or deluding yourself).</p></aside>
+    <aside class="notes"><p>Sorry to say, you’re already trusting your compiler (or deluding yourself).</p></aside>
   </section>
   <section>
     <p>What if the compiler emits suboptimal code?</p>
     <h2 class="fragment">File a bug!</h2>
+  </section>
+</section>
+
+<section>
+  <section>
+    <h1>Sequence lock</h1>
+    <ul>
+      <li class="fragment">Get ticket number</li>
+      <li class="fragment">Get the data</li>
+      <li class="fragment">Check the ticket again
+        <ul>
+          <li>If odd: write was happening</li>
+          <li>If different: write occurred</li>
+          <li>If same: no write occurred, data is good</li>
+        </ul>
+      </li>
+      <li class="fragment">If data isn’t good: try again</li>
+    </ul>
+    <aside class="notes"><p>Read-mostly; don’t starve writers.</p></aside>
+  </section>
+  <section>
+    <pre><code class="c++" data-noescape>
+std::tuple&lt;T, T&gt; reader() {
+  T d1, d2; unsigned seq0, seq1;
+  do {
+    seq0 = seq.load(std::memory_order_acquire);
+    d1 = data1.load(std::memory_order_relaxed);
+    d2 = data2.load(std::memory_order_relaxed);
+    <mark>std::atomic_thread_fence(std::memory_order_acquire);</mark>
+    <mark>seq1 = seq.load(std::memory_order_relaxed);</mark>
+  } while (seq0 != seq1 || seq0 &amp; 1);
+  return {d1, d2};
+}
+    </code></pre>
+    <pre><code class="c++" data-noescape>
+void writer(T d1, T d2) {
+  unsigned seq0 = seq.load(std::memory_order_relaxed);
+  seq.store(seq0 + 1, std::memory_order_relaxed);
+  data1.store(d1, std::memory_order_release);
+  data2.store(d2, std::memory_order_release);
+  seq.store(seq0 + 2, std::memory_order_release);
+}
+    </code></pre>
+    <aside class="notes"><p>Relaxed can be reordered with each other; fence is heavy on some architectures; acquire over-constrains (prevents motion into critical section); not intuitive.</p></aside>
+  </section>
+  <section>
+    <p>We <em>really</em> want a release store</p>
+    <p class="fragment">(there is no release store)</p>
+  </section>
+  <section>
+    <h2>Read-don’t-modify-write</h2>
+    <pre class="fragment"><code class="c++" data-noescape>
+T d1, d2;
+unsigned seq0, seq1;
+do {
+  seq0 = seq.load(std::memory_order_acquire);
+  d1 = data1.load(std::memory_order_relaxed);
+  d2 = data2.load(std::memory_order_relaxed);
+  <mark>seq1 = seq.fetch_add(0, std::memory_order_release);</mark>
+} while (seq0 != seq1 || seq0 &amp; 1);
+    </code></pre>
+    <aside class="notes"><p>Better for some architectures; can move reads into critical section.</p></aside>
+  </section>
+  <section>
+      <pre class="fragment"><code class="x86asm" data-noescape>
+ mov    0x200a76(%rip),%edx        # seq
+ mov    0x200a74(%rip),%eax        # data1
+ mov    0x200a72(%rip),%ecx        # data2
+# acquire fence
+ mov    0x200a64(%rip),%esi        # seq
+      </code></pre>
+      <pre class="fragment"><code class="x86asm" data-noescape>
+ mov    0x2004c6(%rip),%ecx        # seq
+ mov    0x2004bc(%rip),%esi        # data1
+ xor    %edx,%edx
+ mov    0x2004af(%rip),%r8d        # data2
+ lock xadd %edx,0x2004af(%rip)     # seq RdMW
+      </code></pre>
+      <pre class="fragment"><code class="x86asm" data-noescape>
+ mov    0x200a46(%rip),%edx        # seq
+ mov    0x200a44(%rip),%eax        # data1
+ mov    0x200a42(%rip),%ecx        # data2
+ mfence                            # optimized RdMW!
+ mov    0x200a31(%rip),%esi        # seq
+      </code></pre>
+    <aside class="notes"><p>x86 `lock xadd` requires exclusive access! Can optimize to `mfence; mov`.</p></aside>
+  </section>
+  <section>
+    <h2>What's better?</h2>
+    <img src="seqlock.png" />
+    <aside class="notes"><p>`mfence` is 3.5× slower. On POWER RdMW is faster but doesn't scale with number of threads.</p></aside>
   </section>
 </section>
 
