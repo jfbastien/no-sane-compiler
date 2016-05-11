@@ -87,6 +87,41 @@ _Z3inci:
   lock incl x(%rip)
   lock addl %edi, x(%rip)
   </code></pre></section>
+  <section><h1>Opportunities through inlining</h1></section>
+  <section><pre><code class="c++" data-noescape>
+template&lt;typename T&gt;
+bool silly(std::atomic&lt;T&gt; *x, T expected, T desired) {
+  x-&gt;compare_exchange_strong(expected, desired); // Inlined.
+  return expected == desired;
+}
+  </code></pre></section>
+  <section><pre><code class="c++" data-noescape>
+template&lt;typename T&gt;
+bool silly(std::atomic&lt;T&gt; *x, T expected, T desired) {
+  return x-&gt;compare_exchange_strong(expected, desired);
+}
+  </code></pre></section>
+  <section>
+    <h1>A tricky one</h1>
+    <p>Works for any memory order but <code class="c++">release</code> and <code class="c++">acq_rel</code></p>
+  </section>
+  <section><pre><code class="c++" data-noescape>
+template&lt;typename T&gt;
+bool optme(std::atomic&lt;T&gt; *x, T desired) {
+  T expected = desired;
+  return x-&gt;compare_exchange_strong(expected, desired
+    std::memory_order_seq_cst, std::memory_order_relaxed);
+}
+  </code></pre></section>
+  <section><pre><code class="c++" data-noescape>
+template&lt;typename T&gt;
+bool optme(std::atomic&lt;T&gt; *x, T desired) {
+  return x-&gt;load(std::memory_order_seq_cst) == desired; // †
+}
+  </code></pre>
+    <p class="fragment"><small>† compiler: mark transformed load as <em>release sequence</em><sup>‡</sup></small></p>
+    <p class="fragment"><small>‡ as defined in section 1.10 of the C++ standard</small></p>
+  </section>
 </section>
 
 
