@@ -26,12 +26,24 @@
                         <div class="slides">
 
 <section>
-  <h1>No Sane Compiler Would Optimize Atomics</h1>
-  <p><a href="https://twitter.com/jfbastien">@jfbastien</a></p>
-</section>
-
-<section>
-  <code class="c++">false</code>
+  <section>
+    <h1>No Sane Compiler Would Optimize Atomics</h1>
+    <p><a href="https://twitter.com/jfbastien">@jfbastien</a></p>
+  </section>
+  <section>
+    <code class="c++">false</code>
+    <aside class="notes">
+      <p>Compilers do optimize atomics, memory accesses around atomics, and
+        utilize architecture-specific knowledge. My hobby is to encourage
+        compilers to do more of this, programmers to rely on it, and hardware
+        vendors to give us new atomic toys to optimize with. Oh, and standardize
+        yet more close-to-the-metal concurrency and parallelism tools.</p>
+      <p>But, you say, surely volatile always means volatile, there’s nothing
+        wrong with my benign races, nothing could even go wrong with
+        non-temporal accesses, and who needs 6 memory orderings anyways‽ I’m
+        glad you asked, let me tell you about my hobby…</p>
+    </aside>
+  </section>
 </section>
 
                         </div>
