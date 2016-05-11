@@ -293,6 +293,46 @@ void relaxed() {
     </ul>
   </section>
   <section>
+    <h2>Optimizing around atomics</h2>
+    <pre class="fragment"><code class="c++" data-noescape>
+int x = 0;
+std::atomic&lt;int&gt; y;
+int dso() {
+  x = 0;
+  int z = y.load(std::memory_order_seq_cst);
+  y.store(0, std::memory_order_seq_cst);
+  x = 1;
+  return z;
+}
+    </code></pre>
+    <pre class="fragment"><code class="c++" data-noescape>
+int x = 0;
+std::atomic&lt;int&gt; y;
+int dso() {
+  // Dead store eliminated.
+  int z = y.load(std::memory_order_seq_cst);
+  y.store(0, std::memory_order_seq_cst);
+  x = 1;
+  return z;
+}
+    </code></pre>
+    <aside class="notes">Only way another thread could have observed DSO: if code had been racy. Only a release/acquire pair could have been synchronized.</aside>
+  </section>
+  <section>
+    <h2>It's the hardware, silly!</h2>
+    <pre class="fragment"><code class="c++" data-noescape>
+int x = 0;
+std::atomic&lt;int&gt; y;
+int no() {
+  x = 0;
+  y.store(0, std::memory_order_release);
+  while (!y.load(std::memory_order_acquire));
+  x = 1;
+  return z;
+}    </code></pre>
+    <aside class="notes">The compiler should optimize what hardware already does.</aside>
+  </section>
+  <section>
     <h2>Moar!</h2>
     <ul>
       <li class="fragment">Tag "non-atomic" functions, optimize around them</li>
