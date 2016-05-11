@@ -316,7 +316,7 @@ int dso() {
   return z;
 }
     </code></pre>
-    <aside class="notes">Only way another thread could have observed DSO: if code had been racy. Only a release/acquire pair could have been synchronized.</aside>
+    <aside class="notes">Only way another thread could have observed DSO: if code had been racy. Only a release/acquire pair could have been synchronized. Is the compiler being a jerk?</aside>
   </section>
   <section>
     <h2>It's the hardware, silly!</h2>
@@ -342,6 +342,21 @@ int no() {
     </ul>
     <aside class="notes">Compilers already know about "read-only" functions.</aside>
   </section>
+</section>
+
+<section>
+  <h1><code class="c++">std::mutex</code> for sanity</h1>
+  <ul>
+    <li class="fragment">easier to use correctly</li>
+    <li class="fragment">in theory...
+      <ul>
+        <li>it could still get optimized</li>
+        <li>lock: <code class="c++">acquire</code>; unlock: <code class="c++">release</code></li>
+      </ul>
+    </li>
+    <li class="fragment">pthread and kernel call makes this hard</li>
+    <li class="fragment"><code class="c++">std::synchronic</code> to the rescue!</li>
+  </ul>
 </section>
 
 <section>
