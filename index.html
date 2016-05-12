@@ -276,7 +276,7 @@
       <tr><td>non-<code class="c++">seq_cst</code> fence</td><td><code class="x86asm">lwsync</code></td></tr>
       <tr><td><code class="c++">seq_cst</code> fence</td><td><code class="x86asm">hwsync</code></td></tr>
     </table>
-    <aside class="notes">cmpxchg is ll / sc, more variants missing, RMW uses ll / sc.</aside>
+    <aside class="notes">cmpxchg is ll / sc, more variants missing, RMW uses ll / sc. Not showing 64-bit.</aside>
   </section>
   <section>
     <h1>ARMv7</h1>
@@ -291,7 +291,22 @@
       <tr><td><code class="c++">cmpxchg relaxed</code></td><td><code class="x86asm">_loop: ldrex; mov 0; teq; strexeq; teq 0; bne _loop</code></td></tr>
       <tr><td>fences</td><td><code class="x86asm">dmb</code></td></tr>
     </table>
-    <aside class="notes">Similar to Power.</aside>
+    <aside class="notes">Similar to Power, same for MIPS. 64-bit is slightly horrible; has ldrexd; sometimes ldrd is single-copy atomic.</aside>
+  </section>
+  <section>
+    <h1>ARMv8 A64</h1>
+    <table style="font-size: 75%">
+      <tr><td>load <code class="c++">relaxed</code></td><td><code class="x86asm">ldr</code></td></tr>
+      <tr><td>load <code class="c++">consume</code></td><td><code class="x86asm">ldr + dependencies</code></td></tr>
+      <tr><td>load <code class="c++">acquire</code></td><td><code class="x86asm">ldar</code></td></tr>
+      <tr><td>load <code class="c++">seq_cst</code></td><td><code class="x86asm">ldar</code></td></tr>
+      <tr><td>store <code class="c++">relaxed</code></td><td><code class="x86asm">str</code></td></tr>
+      <tr><td>store <code class="c++">release</code></td><td><code class="x86asm">stlr</code></td></tr>
+      <tr><td>store <code class="c++">seq_cst</code></td><td><code class="x86asm">stlr</code></td></tr>
+      <tr><td><code class="c++">cmpxchg relaxed</code></td><td><code class="x86asm">_loop: ldxr; cmp; bne _exit; stxr; cbz _loop; _exit</code></td></tr>
+      <tr><td>fences</td><td><code class="x86asm">dmb</code></td></tr>
+    </table>
+    <aside class="notes">Life imitates standards! Added "acquire" / "release" primitives, even to aarch32.</aside>
   </section>
 </section>
 
