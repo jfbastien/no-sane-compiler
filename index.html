@@ -46,12 +46,11 @@
 <section>
   <section><h1>Quick review</h1></section>
   <section>
-    <p>C++11 added support for</p>
+    <p>C++11 added</p>
     <ul>
-      <li class="fragment"><code class="c++">std::thread</code></li>
-      <li class="fragment"><code class="c++">std::mutex</code></li>
-      <li class="fragment"><code class="c++">std::atomic</code></li>
       <li class="fragment">A memory model</li>
+      <li class="fragment">Threads</li>
+      <li class="fragment">Classes to communicate between threads</li>
     </ul>
     <p class="fragment">Threads didn't exist before C++11</p>
   </section>
@@ -144,9 +143,31 @@
     </p>
   </section>
   <section>
+    <h1>Synchronization operation</h1>
+    <ul>
+      <li class="fragment">On one or more memory locations: consume operation,
+        an acquire operation, a release operation, or both an acquire and
+        release operation.</li>
+      <li class="fragment">Without an associated memory location: acquire fence,
+        release fence, or both an acquire and release fence.</li>
+    </ul>
+    <aside class="notes">Also: relaxed atomic operations are not synchronization operations; atomic read-modify-write operations have special characteristics.</aside>
+  </section>
+  <section>
     <h1>[intro.multithread]</h1>
     <p class="fragment">1.10 Multi-threaded executions and data races</p>
     <aside class="notes">Also defines: thread of execution, forward-progress, etc.</aside>
+  </section>
+  <section>
+    <h1>Thread support</h1>
+    <ul>
+      <li class="fragment"><code class="c++">std::thread</code></li>
+      <li class="fragment"><code class="c++">std::mutex</code></li>
+      <li class="fragment"><code class="c++">std::shared_mutex</code></li>
+      <li class="fragment"><code class="c++">std::condition_variable</code></li>
+      <li class="fragment"><code class="c++">std::future</code></li>
+    </ul>
+    <aside class="notes">I'll ignore these for the rest of the presentation.</aside>
   </section>
 </section>
 
