@@ -243,6 +243,25 @@
 
 <section>
   <section>
+    <h1>Simple single producer / consumer</h1>
+    <pre class="fragment"><code class="c++" data-noescape>
+struct Data { int spam, bacon, eggs; std::atomic&lt;int&gt; ready; };
+void write(Data *d) {
+  d-&gt;spam = 0xBEEF;
+  d-&gt;bacon = 0xCAFE;
+  d-&gt;eggs = 0x0000;
+  d-&gt;ready.store(1, std::memory_order_release);
+}
+auto read(Data *d) {
+  while (!d-&gt;ready.load(std::memory_order_acquire)) ;
+  return std::make_tuple(d-&gt;spam, d-&gt;bacon, d-&gt;eggs);
+}
+    </code></pre>
+  </section>
+</section>
+
+<section>
+  <section>
     <h1>We have our tools!</h1>
     <p class="fragment">Why is the language set up this way?</p>
     <p class="fragment">Provide an abstraction for relevant hardware platforms.</p>
@@ -356,6 +375,17 @@
       even if the writes were forced (by the write barrier in the writer) to
       happen in the right order.</p>
     </div>
+    <aside class="notes">Hard to implement C++ efficiently on Alpha! Exception that proves the rule?</aside>
+  </section>
+  <section>
+    <h1>Takeaways</h1>
+    <ul>
+      <li class="fragment">C++ exposes hardware portably</li>
+      <li class="fragment">Hardware changes over time</li>
+      <li class="fragment">Assembly operations operation on memory locations</li>
+      <li class="fragment">C++ atomics operate on datastructures</li>
+    </ul>
+    <aside class="notes">Portability is hard. Compiler should know best. C++ is higher level than asm. Operating on data instead of code is contended.</aside>
   </section>
 </section>
 
@@ -642,7 +672,7 @@ void relaxed() {
 <section>
   <h1>Sane Compilers Should Optimize Atomics</h1>
   <p>and you should use atomics</p>
-  <p>Details &amp; references: <a href="https://github.com/jfbastien/no-sane-compiler">github.com/jfbastien/no-sane-compiler</a></p>
+  <p><a href="https://github.com/jfbastien/no-sane-compiler">github.com/jfbastien/no-sane-compiler</a></p>
   <p><a href="https://twitter.com/jfbastien">@jfbastien</a></p>
 </section>
 
