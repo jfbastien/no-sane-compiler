@@ -169,6 +169,76 @@
     </ul>
     <aside class="notes">I'll ignore these for the rest of the presentation.</aside>
   </section>
+  <section>
+    <h1>Atomic operations</h1>
+    <p class="fragment"><strong>Atomic</strong>: indivisible with respect to all other atomic accesses to that object</p>
+    <aside class="notes">No tearing, no duplication, no elision.</aside>
+  </section>
+  <section>
+    <h1>Memory order</h1>
+    <ul>
+      <li class="fragment"><code class="c++">relaxed</code></li>
+      <li class="fragment"><code class="c++">consume</code></li>
+      <li class="fragment"><code class="c++">acquire</code></li>
+      <li class="fragment"><code class="c++">release</code></li>
+      <li class="fragment"><code class="c++">acq_rel</code></li>
+      <li class="fragment"><code class="c++">seq_cst</code></li>
+    </ul>
+    <aside class="notes">Used as constants passed to atomic operations. You can use a runtime variable, but your life will be sad. Actually a lattice.</aside>
+  </section>
+  <section>
+    <h1>Atomic</h1>
+    <ul>
+      <li class="fragment"><code class="c++">template&lt;class T&gt; struct atomic;</code></li>
+      <li class="fragment"><code class="c++">template&lt;&gt; struct atomic&lt;integral&gt;;</code></li>
+      <li class="fragment"><code class="c++">template&lt;class T&gt; struct atomic&lt;T*&gt;;</code></li>
+    </ul>
+    <aside class="notes">All atomics operations are on atomic objects. Lifetime of memory locations, exclusively atomic or not. Holds a representation of T (alignment, etc).</aside>
+  </section>
+  <section>
+    <h1>Atomic&lt;T&gt;</h1>
+    <ul>
+      <li class="fragment"><code class="c++">load</code></li>
+      <li class="fragment"><code class="c++">store</code></li>
+      <li class="fragment"><code class="c++">exchange</code></li>
+      <li class="fragment"><code class="c++">compare_exchange_{weak,strong}</code></li>
+      <li class="fragment"><code class="c++">is_lock_free</code></li>
+    </ul>
+    <aside class="notes">Must be trivially copyable; can be structs, but watch out for padding bits! All have atomic ordering (except lock free).</aside>
+  </section>
+  <section>
+    <h1>Atomic&lt;integral&gt;</h1>
+    <ul>
+      <li class="fragment"><code class="c++">fetch_add</code></li>
+      <li class="fragment"><code class="c++">fetch_sub</code></li>
+      <li class="fragment"><code class="c++">fetch_and</code></li>
+      <li class="fragment"><code class="c++">fetch_or</code></li>
+      <li class="fragment"><code class="c++">fetch_xor</code></li>
+    </ul>
+    <aside class="notes">Some shorthands (without ordering) and coercions; integers are two's complement (no UB!).</aside>
+  </section>
+  <section>
+    <h1>Atomic&lt;T*&gt;</h1>
+    <ul>
+      <li class="fragment"><code class="c++">fetch_add</code></li>
+      <li class="fragment"><code class="c++">fetch_sub</code></li>
+    </ul>
+  </section>
+  <section>
+    <h1>Fences</h1>
+    <ul>
+      <li class="fragment"><code class="c++">atomic_thread_fence</code></li>
+      <li class="fragment"><code class="c++">atomic_signal_fence</code></li>
+    </ul>
+    <aside class="notes">Only really needed with relaxed. Signal fence is basically a compiler barrier.</aside>
+  </section>
+  <section>
+    <h1>Lock-freedom</h1>
+    <p class="fragment">Guaranteed for <code class="c++">std::atomic_flag</code></p>
+    <p class="fragment">Roughtly: is there a compare-exchange for this size?</p>
+    <p class="fragment">This is what I'm focusing on.</p>
+    <aside class="notes">Why a runtime value? If it's not lock-free, you probably want to use a coarse-grained lock (unless you're lazy and want the implementation's locks).</aside>
+  </section>
 </section>
 
 <section>
