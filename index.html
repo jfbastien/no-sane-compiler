@@ -243,6 +243,28 @@
 
 <section>
   <section>
+    <h1>We have our tools!</h1>
+    <p class="fragment">Why is the language set up this way?</p>
+    <p class="fragment">Provide an abstraction for relevant hardware platforms.</p>
+  </section>
+  <section>
+    <h1>x86-64</h1>
+    <table style="font-size: 75%">
+      <tr><td>load <code class="c++">relaxed</code></td><td><code class="x86asm">MOV</code></td></tr>
+      <tr><td>load <code class="c++">consume</code></td><td><code class="x86asm">MOV</code></td></tr>
+      <tr><td>load <code class="c++">acquire</code></td><td><code class="x86asm">MOV</code></td></tr>
+      <tr><td>load <code class="c++">seq_cst</code></td><td><code class="x86asm">MOV</code></td></tr>
+      <tr><td>store <code class="c++">relaxed</code></td><td><code class="x86asm">MOV</code></td></tr>
+      <tr><td>store <code class="c++">release</code></td><td><code class="x86asm">MOV</code></td></tr>
+      <tr><td>store <code class="c++">seq_cst</code></td><td><code class="x86asm">LOCK XCHG</code></td></tr>
+      <tr><td>non-<code class="c++">seq_cst</code> fence</td><td><code class="x86asm"># free!</code></td></tr>
+      <tr><td><code class="c++">seq_cst</code> fence</td><td><code class="x86asm">MFENCE</code></td></tr>
+    </table>
+  </section>
+</section>
+
+<section>
+  <section>
     <h1><em>as-if</em></h1>
     <p class="fragment"><strong>more atomic</strong>: don’t violate forward progress</p>
     <p class="fragment"><strong>less atomic</strong>: don’t add non-benign race which weren’t already present</p>
