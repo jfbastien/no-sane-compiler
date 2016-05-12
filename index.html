@@ -246,10 +246,11 @@
     <h1>We have our tools!</h1>
     <p class="fragment">Why is the language set up this way?</p>
     <p class="fragment">Provide an abstraction for relevant hardware platforms.</p>
+    <aside class="notes">Let's look at a few architectures.</aside>
   </section>
   <section>
     <h1>x86-64</h1>
-    <table style="font-size: 75%">
+    <table class="fragment" style="font-size: 75%">
       <tr><td>load <code class="c++">relaxed</code></td><td><code class="x86asm">MOV</code></td></tr>
       <tr><td>load <code class="c++">consume</code></td><td><code class="x86asm">MOV</code></td></tr>
       <tr><td>load <code class="c++">acquire</code></td><td><code class="x86asm">MOV</code></td></tr>
@@ -264,7 +265,7 @@
   </section>
   <section>
     <h1>Power</h1>
-    <table style="font-size: 75%">
+    <table class="fragment" style="font-size: 75%">
       <tr><td>load <code class="c++">relaxed</code></td><td><code class="x86asm">ld</code></td></tr>
       <tr><td>load <code class="c++">consume</code></td><td><code class="x86asm">ld + dependencies</code></td></tr>
       <tr><td>load <code class="c++">acquire</code></td><td><code class="x86asm">ld; cmp; bc; isync</code></td></tr>
@@ -280,7 +281,7 @@
   </section>
   <section>
     <h1>ARMv7</h1>
-    <table style="font-size: 75%">
+    <table class="fragment" style="font-size: 75%">
       <tr><td>load <code class="c++">relaxed</code></td><td><code class="x86asm">ldr</code></td></tr>
       <tr><td>load <code class="c++">consume</code></td><td><code class="x86asm">ldr + dependencies</code></td></tr>
       <tr><td>load <code class="c++">acquire</code></td><td><code class="x86asm">ldr; dmb</code></td></tr>
@@ -295,7 +296,7 @@
   </section>
   <section>
     <h1>ARMv8 A64</h1>
-    <table style="font-size: 75%">
+    <table class="fragment" style="font-size: 75%">
       <tr><td>load <code class="c++">relaxed</code></td><td><code class="x86asm">ldr</code></td></tr>
       <tr><td>load <code class="c++">consume</code></td><td><code class="x86asm">ldr + dependencies</code></td></tr>
       <tr><td>load <code class="c++">acquire</code></td><td><code class="x86asm">ldar</code></td></tr>
@@ -307,6 +308,54 @@
       <tr><td>fences</td><td><code class="x86asm">dmb</code></td></tr>
     </table>
     <aside class="notes">Life imitates standards! Added "acquire" / "release" primitives, even to aarch32.</aside>
+  </section>
+  <section>
+    <h1>Itanium</h1>
+    <table class="fragment" style="font-size: 75%">
+      <tr><td>load <code class="c++">relaxed</code></td><td><code class="x86asm">ld.acq</code></td></tr>
+      <tr><td>load <code class="c++">consume</code></td><td><code class="x86asm">ld.acq</code></td></tr>
+      <tr><td>load <code class="c++">acquire</code></td><td><code class="x86asm">ld.acq</code></td></tr>
+      <tr><td>load <code class="c++">seq_cst</code></td><td><code class="x86asm">ld.acq</code></td></tr>
+      <tr><td>store <code class="c++">relaxed</code></td><td><code class="x86asm">st.rel</code></td></tr>
+      <tr><td>store <code class="c++">release</code></td><td><code class="x86asm">st.rel</code></td></tr>
+      <tr><td>store <code class="c++">seq_cst</code></td><td><code class="x86asm">st.rel; mfB</code></td></tr>
+      <tr><td><code class="c++">cmpxchg acquire</code></td><td><code class="x86asm">cmpxchg.acq</code></td></tr>
+      <tr><td>non-<code class="c++">seq_cst</code> fence</td><td><code class="x86asm"># free!</code></td></tr>
+      <tr><td><code class="c++">seq_cst</code> fence</td><td><code class="x86asm">mf</code></td></tr>
+    </table>
+  </section>
+  <section>
+    <h1>Alpha</h1>
+    <div class="fragment" style="font-size: 50%; text-align: left">
+    <p>Oh, one of my favorite (NOT!) pieces of code in the kernel is the
+      implementation of the <code>smp_read_barrier_depends()</code> macro, which
+      on every single architecture except for one (alpha) is a no-op.</p>
+    <p>We have basically 30 or so empty definitions for it, and I think we have
+      something like five uses of it. One of them, I think, is performance
+      crticial, and the reason for that macro existing.</p>
+    <p>What does it do? The semantics is that it's a read barrier between two
+      different reads that we want to happen in order wrt two writes on the
+      writing side (the writing side also has to have a <code>smp_wmb()</code>
+      to order those writes). But the reason it isn't a simple read barrier is
+      that the reads are actually causally *dependent*, ie we have code like</p>
+    <pre class="c++"><code class="c++" data-noescape>
+      first_read = read_pointer;
+      smp_read_barrier_depends();
+      second_read = *first_read;
+    </code></pre>
+    <p>and it turns out that on pretty much all architectures (except for
+      alpha), the *data*dependency* will already guarantee that the CPU reads
+      the thing in order. And because a read barrier can actually be quite
+      expensive, we don't want to have a read barrier for this case.</p>
+    <p>But alpha? Its memory consistency is so broken that even the data
+      dependency doesn't actually guarantee cache access order. It's strange,
+      yes. No, it's not that alpha does some magic value prediction and can do
+      the second read without having even done the first read first to get the
+      address. What's actually going on is that the cache itself is unordered,
+      and without the read barrier, you may get a stale version from the cache
+      even if the writes were forced (by the write barrier in the writer) to
+      happen in the right order.</p>
+    </div>
   </section>
 </section>
 
