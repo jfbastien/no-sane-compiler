@@ -31,11 +31,122 @@
     <p><a href="https://twitter.com/jfbastien">@jfbastien</a></p>
   </section>
   <section>
-    <code class="c++">false</code>
+    <strong><code class="c++" style="font-size: 400%">false</code></strong>
     <aside class="notes">
       <p>Compilers do optimize atomics, memory accesses around atomics, and utilize architecture-specific knowledge. My hobby is to encourage compilers to do more of this, programmers to rely on it, and hardware vendors to give us new atomic toys to optimize with. Oh, and standardize yet more close-to-the-metal concurrency and parallelism tools.</p>
       <p>But, you say, surely volatile always means volatile, there’s nothing wrong with my benign races, nothing could even go wrong with non-temporal accesses, and who needs 6 memory orderings anyways‽ I’m glad you asked, let me tell you about my hobby…</p>
     </aside>
+  </section>
+  <section>
+    <h1>Disclaimer</h1>
+    <aside class="notes">Peek under the hood. Prefer higher-level primitives (parallelism TS, mutex, etc).</aside>
+  </section>
+</section>
+
+<section>
+  <section><h1>Quick review</h1></section>
+  <section>
+    <p>C++11 added support for</p>
+    <ul>
+      <li class="fragment"><code class="c++">std::thread</code></li>
+      <li class="fragment"><code class="c++">std::mutex</code></li>
+      <li class="fragment"><code class="c++">std::atomic</code></li>
+      <li class="fragment">A memory model</li>
+    </ul>
+    <p class="fragment">Threads didn't exist before C++11</p>
+  </section>
+  <section>
+    <h1>Sequential Consistency</h1>
+    <p class="fragment">Naïve model: memory accesses are simply interleaved</p>
+    <p class="fragment">Hardware doesn't work that way</p>
+    <p class="fragment">Overly restrictive</p>
+    <aside class="notes">Limits compiler + HW reordering / optimizations; access granularity; want to reason about atomic code regions</aside>
+  </section>
+  <section>
+    <h1>SC-DRF</h1>
+    <p class="fragment">Data race:</p>
+    <ul>
+      <li class="fragment">Two accesses to the same <em>memory location</em> by different threads are <em>not ordered</em></li>
+      <li class="fragment">At least one of them stores to the memory location</li>
+      <li class="fragment">At least one of them is not a synchronization action</li>
+    </ul>
+    <p class="fragment">Data races are UB</p>
+    <aside class="notes">You should use address sanitizer</aside>
+  </section>
+  <section>
+    <h1>Memory locations</h1>
+    <p class="fragment">Either an object of <em>scalar type</em> or a maximal
+        sequence of adjacent bit-fields all having non-zero width.</p>
+    <p class="fragment">Arithmetic types, enumeration types, pointer types,
+      pointer to member types, <code class="c++">std::nullptr_t</code>, and
+      cv-qualified versions of these types are collectively called <em>scalar
+      types</em>.
+    </p>
+    <aside class="notes">Also, address-freedom</aside>
+  </section>
+  <section>
+    <h1>Ordering memory locations</h1>
+    <p class="fragment">Two memory operations are ordered if they cannot occur simultaneously</p>
+    <aside class="notes">That sounds simple!</aside>
+  </section>
+  <section>
+    <h1>Ordering memory locations</h1>
+    <p class="fragment">An evaluation A <em>happens before</em> an evaluation B if:
+      <ul class="fragment">
+        <li>A is <em>sequenced before</em> B, or</li>
+        <li>A <em>inter-thread happens before</em> B</li>
+      </ul>
+    </p>
+    <aside class="notes">More precisely...</aside>
+  </section>
+  <section>
+    <h1>Sequenced before</h1>
+    <p>An asymmetric, transitive, pair-wise relation between evaluations
+      executed by a single thread, which induces a partial order among those
+      evaluations. Given any two evaluations A and B, if A is <em>sequenced
+      before</em> B, then the execution of A shall precede the execution of
+      B. If A is not <em>sequenced before</em> B and B is not
+      <em>sequenced before</em> A, then A and B are <em>unsequenced</em>.
+    </p>
+  </section>
+  <section>
+    <h1>Inter-thread happens before</h1>
+    <ul>
+      <li>A <em>synchronizes with</em> B, or</li>
+      <li>A is <em>dependency-ordered before</em> B, or</li>
+      <li>for some evaluation X
+        <ul>
+          <li>A <em>synchronizes with</em> X and X is <em>sequenced before</em> B, or</li>
+          <li>A is <em>sequenced before</em> X and X <em>inter-thread happens before</em> B, or</li>
+          <li>A <em>inter-thread happens before</em> X and X <em>inter-thread happens before</em> B.</li>
+        </ul>
+    </ul>
+  </section>
+  <section>
+    <h1>Synchronizes with</h1>
+    <p>An atomic operation A that performs a release operation on an atomic
+      object M <em>synchronizes with</em> an atomic operation B that performs an
+      acquire operation on M and takes its value from any side effect in the
+      release sequence headed by A.
+    </p>
+  </section>
+  <section>
+    <h1>Dependency-ordered before</h1>
+    <ul>
+      <li>A performs a release operation on an atomic object M, and, in another
+        thread, B performs a consume operation on M and reads a value written by
+        any side effect in the release sequence headed by A, or</li>
+      <li>for some evaluation X, A is <em>dependency-ordered before</em> X and X carries a dependency to B.</li>
+    </ul>
+    <p>[ Note: The relation “is dependency-ordered before” is analogous to
+      “synchronizes with”, but uses release/consume in place of
+      release/acquire. — end note ]
+    </p>
+  </section>
+  <section>
+    <h1>[intro.multithread]</h1>
+    <p class="fragment">1.10 Multi-threaded executions and data races</p>
+    <aside class="notes">Also defines: thread of execution, forward-progress, etc.</aside>
   </section>
 </section>
 
