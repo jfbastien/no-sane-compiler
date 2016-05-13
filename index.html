@@ -401,11 +401,17 @@ auto read(Data *d) {
     <p class="fragment"><strong>less atomic</strong>: don’t add non-benign race which weren’t already present</p>
   </section>
   <section>
-    <p><h2>Put another way</h2></p>
+    <h2>Put another way</h2>
     <p>correct programs must work under all executions an implementation is allowed to create</p>
     <aside class="notes">
       <p>Keep in mind: compilers optimize code that compiler developers see and think are worth optimizing. We’re not trying to trip you!</p>
     </aside>
+  </section>
+  <section>
+    <h2>What can the compiler do?</h2>
+    <p class="fragment">At least as much as the hardware could do</p>
+    <p class="fragment">and maybe more 😉</p>
+    <aside class="notes">Is this circular, since HW adapts to the standard?</aside>
   </section>
 </section>
 
