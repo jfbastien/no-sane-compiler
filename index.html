@@ -407,6 +407,18 @@ LDR r2, [r3, r1]
     <aside class="notes">Value returned by read is used to compute virtual address of subsequent read or write, these two memory accesses are observed in program order. Not control dependency on ARM.</aside>
   </section>
   <section>
+    <h1>Architecture-specific</h1>
+    <p>Same architectrure, different instructions / performance.</p>
+    <p class="fragment">Flags to the rescue: <code>-march</code>, <code>-mcpu</code>, <code>-mattr</code></p>
+    <ul>
+      <li class="fragment">Special instructions</li>
+      <li class="fragment">what's the best spinloop?</li>
+      <li class="fragment">nominally incorrect code</li>
+      <li class="fragment">Workaround CPU bugs</li>
+    </ul>
+    <aside class="notes">Special: Intel RTM / HLE. Incorrect: on Apple Swift processor DMB ISH versus DMB ISHST (only wait for stores); some arch doesn't need barrier at all! AMD CPU bug for Chrome: barrier bug in AMD errata 147, Opterons 1xx/2xx/8xx, 2003-2004, 0.02% of Chrome users, compiler workaround.</aside>
+  </section>
+  <section>
     <h1>Takeaways</h1>
     <ul>
       <li class="fragment">C++ exposes hardware portably</li>
