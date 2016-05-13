@@ -712,6 +712,74 @@ void relaxed() {
 </section>
 
 <section>
+  <section>
+    <h1><code class="c++">volatile</code></h1>
+    <p class="fragment">Initial motivation: <code class="c++">getChar()</code> on PDP-11, reading memory-mapped <code>KBD_STAT</code> I/O register</p>
+    <p class="fragment">K&amp;R: The purpose of <code class="c++">volatile</code> is to force an implementation to suppress optimization that could otherwise occur</p>
+  </section>
+  <section>
+    <h1>What does that mean?</h1>
+    <ul>
+      <li class="fragment">Prevent load / store motion?</li>
+      <li class="fragment">Prevent arithmetic motion?</li>
+      <li class="fragment">Hardware fence? x86 <code class="x86asm">MFENCE</code>? ARM <code class="x86asm">DMB SY</code>?</li>
+      <li class="fragment">Shared memory?</li>
+    </ul>
+    <aside class="notes">When shared memory is used and the other side is untrusted / adversarial / POB (Plain Old Buggy). c.f. Xen exploit.</code>
+  </section>
+  <section>
+    <h1>It gets better</h1>
+  </section>
+  <section>
+    <h1>Xtensa GCC options</h1>
+    <p><code>-mserialize-volatile</code></p>
+    <p><code>-mnoserialize-volatile</code></p>
+    <p>When this option is enabled, GCC inserts <code>MEMW</code> instructions before <code>volatile</code> memory references to guarantee sequential consistency.</p>
+  </section>
+  <section>
+    <h1>MSVC</h1>
+    <p>You can use the <code>/volatile</code> compiler switch to modify how the compiler interprets this keyword. If a struct member is marked as <code>volatile</code>, then <code>volatile</code> is propagated to the whole structure. If a structure does not have a length that can be copied on the current architecture by using one instruction, <code>volatile</code> may be completely lost on that structure.</p>
+    <p class="fragment">clang emulates this with <code>-fms-volatile</code></p>
+    <aside class="notes">MSVC on ARM does something saner: store release, load acquire.</aside>
+  </section>
+  <section>
+    <h1>What does it mean‽</h1>
+    <p class="fragment">¯\_(ツ)_/¯</p>
+    <ul class="fragment">
+      <li>can tear</li>
+      <li>each byte touched exactly once</li>
+      <li>no machine-level ordering</li>
+      <li>enforces abstract machine ordering with other <code>volatile</code></li>
+      <li>can't duplicate</li>
+      <li>can't elide</li>
+    </ul>
+    <aside class="notes">Highly compiler + HW dependent. Not "atomic" as in greek.</aside>
+  </section>
+  <section>
+    <h1>Can <code>volatile</code> be lock-free?</h1>
+    <p class="fragment">¯\_(ツ)_/¯</p>
+    <aside class="notes">Lock-free usually means cmpxchg available. Touches bytes more than once!</aside>
+  </section>
+  <section>
+    <h1>Can <code>volatile</code> do RMW?</h1>
+    <p class="fragment">No</p>
+  </section>
+  <section>
+    <h1>Are there portable <code>volatile</code> uses?</h1>
+    <ul>
+      <li class="fragment">mark local variables in the same scope as a <code>setjmp</code>, preserve value across <code>longjmp</code></li>
+      <li class="fragment"><strong>externally modified</strong>: physical memory mapped in multiple virtual addresses</li>
+      <li class="fragment"><code>volatile sigatomic_t</code> may be used to communicate with a signal handler in the same thread</li>
+    </ul>
+  </section>
+  <section>
+    <h1><code>volatile atomic</code></h1>
+    <p>what's that?</p>
+    <aside class="notes">Both! Adds atomic as in greek to volatile. Beware lock-free: what happens to address-free with shared mmemory?</aside>
+  </section>
+</section>
+
+<section>
   <h1>Sane Compilers Should Optimize Atomics</h1>
   <p>and you should use atomics</p>
   <p><a href="https://github.com/jfbastien/no-sane-compiler">github.com/jfbastien/no-sane-compiler</a></p>
