@@ -912,6 +912,24 @@ void bar() { int baz; while (1) baz = foo; }
 </section>
 
 <section>
+  <section>
+    <h1>What do compilers do?</h1>
+    <p>by compilers I mean clang</p>
+  </section>
+  <section>
+    <h1>Standard library</h1>
+    <p>C's <code>_Atomic</code> ↔ C++'s <code>std::atomic</code></p>
+    <p class="fragment"><code>_sync_*</code> builtins</p>
+    <p class="fragment"><code>_atomic_*</code> builtins</p>
+  <aside class="notes">Compiler runtime has the lock shard.</aside>
+  </section>
+  <section>
+    <h1>Front-end</h1>
+    <p>does little besides inlining constant <code>memory_order_*</code></p>
+  </section>
+</section>
+
+<section>
   <section><h1>Now what?</h1></section>
   <section>
     <h1>Standards Committee</h1>
