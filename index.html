@@ -192,6 +192,14 @@
     <aside class="notes">Used as constants passed to atomic operations. You can use a runtime variable, but your life will be sad. Actually a lattice, because cmpxchg.</aside>
   </section>
   <section>
+    <h1><code class="c++">relaxed</code></h1>
+    <li class="fragment">racing accesses</li>
+    <li class="fragment">indivisible</li>
+    <li class="fragment">enforce cache coherency</li>
+    <li class="fragment">doesn't guarantee visibility</li>
+    <aside class="notes">Location may be concurrently modified, refrain from optimizations that will break if it is. Cache coherence: single-variable ordering, implicit on most architectures, but requires ld.acq on Itanium.</aside>
+  </section>
+  <section>
     <h1>Atomic</h1>
     <ul>
       <li class="fragment"><code class="c++">template&lt;class T&gt; struct atomic;</code></li>
