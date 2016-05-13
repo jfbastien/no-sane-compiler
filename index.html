@@ -667,18 +667,25 @@ void relaxed() {
 </section>
 
 <section>
-  <h1><code class="c++">std::mutex</code> for sanity</h1>
-  <ul>
-    <li class="fragment">easier to use correctly</li>
-    <li class="fragment">in theory...
-      <ul>
-        <li>it could still get optimized</li>
-        <li>lock: <code class="c++">acquire</code>; unlock: <code class="c++">release</code></li>
-      </ul>
-    </li>
-    <li class="fragment">pthread and kernel call makes this hard</li>
-    <li class="fragment"><code class="c++">std::synchronic</code> to the rescue!</li>
-  </ul>
+  <section>
+    <h1><code class="c++">std::mutex</code> for sanity</h1>
+    <ul>
+      <li class="fragment">easier to use correctly</li>
+      <li class="fragment">in theory...
+        <ul>
+          <li>it could still get optimized</li>
+          <li>lock: <code class="c++">acquire</code>; unlock: <code class="c++">release</code></li>
+        </ul>
+      </li>
+      <li class="fragment">pthread and kernel call makes this hard</li>
+      <li class="fragment"><code class="c++">std::synchronic</code> to the rescue!</li>
+    </ul>
+  </section>
+  <section>
+    <h1><code class="c++">std::mutex</code></h1>
+    <p class="fragment">Knows better</p>
+    <aside class="notes">Backoff strategies are HW and OS specific. Atomics don't solve all problems.</aside>
+  </section>
 </section>
 
 <section>
