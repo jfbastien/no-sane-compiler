@@ -402,6 +402,7 @@ LDR r1, [r0]
 AND r1, r1, #0
 LDR r2, [r3, r1]
     </code></pre>
+    <p class="fragment">Look ma, no barrier!</p>
     <aside class="notes">Value returned by read is used to compute virtual address of subsequent read or write, these two memory accesses are observed in program order. Not control dependency on ARM.</aside>
   </section>
   <section>
