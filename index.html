@@ -104,17 +104,17 @@
   </section>
   <section>
     <h1>Sequenced before</h1>
-    <p>An asymmetric, transitive, pair-wise relation between evaluations
-      executed by a single thread, which induces a partial order among those
-      evaluations. Given any two evaluations A and B, if A is <em>sequenced
-      before</em> B, then the execution of A shall precede the execution of
-      B. If A is not <em>sequenced before</em> B and B is not
+    <p class="fragment">An asymmetric, transitive, pair-wise relation between
+      evaluations executed by a single thread, which induces a partial order
+      among those evaluations. Given any two evaluations A and B, if A
+      is <em>sequenced before</em> B, then the execution of A shall precede the
+      execution of B. If A is not <em>sequenced before</em> B and B is not
       <em>sequenced before</em> A, then A and B are <em>unsequenced</em>.
     </p>
   </section>
   <section>
     <h1>Inter-thread happens before</h1>
-    <ul>
+    <ul class="fragment">
       <li>A <em>synchronizes with</em> B, or</li>
       <li>A is <em>dependency-ordered before</em> B, or</li>
       <li>for some evaluation X
@@ -127,22 +127,22 @@
   </section>
   <section>
     <h1>Synchronizes with</h1>
-    <p>An atomic operation A that performs a release operation on an atomic
-      object M <em>synchronizes with</em> an atomic operation B that performs an
-      acquire operation on M and takes its value from any side effect in the
-      release sequence headed by A.
+    <p class="fragment">An atomic operation A that performs a release operation
+      on an atomic object M <em>synchronizes with</em> an atomic operation B
+      that performs an acquire operation on M and takes its value from any side
+      effect in the release sequence headed by A.
     </p>
   </section>
   <section>
     <h1>Dependency-ordered before</h1>
-    <ul>
+    <ul class="fragment">
       <li>A performs a release operation on an atomic object M, and, in another
         thread, B performs a consume operation on M and reads a value written by
         any side effect in the release sequence headed by A, or</li>
       <li>for some evaluation X, A is <em>dependency-ordered before</em> X and X carries a dependency to B.</li>
     </ul>
-    <p>[ Note: The relation “is dependency-ordered before” is analogous to
-      “synchronizes with”, but uses release/consume in place of
+    <p class="fragment">[ Note: The relation “is dependency-ordered before” is
+      analogous to “synchronizes with”, but uses release/consume in place of
       release/acquire. — end note ]
     </p>
   </section>
