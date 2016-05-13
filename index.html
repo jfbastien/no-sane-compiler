@@ -922,7 +922,7 @@ void bar() { int baz; while (1) baz = foo; }
     <p>C's <code>_Atomic</code> ↔ C++'s <code>std::atomic</code></p>
     <p class="fragment"><code>_sync_*</code> builtins</p>
     <p class="fragment"><code>_atomic_*</code> builtins</p>
-  <aside class="notes">Compiler runtime has the lock shard.</aside>
+  <aside class="notes">Compiler runtime has the lock shard. Older library versions were very broken.</aside>
   </section>
   <section>
     <h1>Front-end</h1>
@@ -942,6 +942,14 @@ void bar() { int baz; while (1) baz = foo; }
       <li class="fragment"><code>cmpxchg [weak] [volatile] &lt;ty&gt;* &lt;pointer&gt;, &lt;ty&gt; &lt;cmp&gt;, &lt;ty&gt; &lt;new&gt; [singlethread] &lt;success ordering&gt; &lt;failure ordering&gt;</code></li>
       <li class="fragment"><code>fence [singlethread] &lt;ordering&gt;</code></li>
     </ul>
+  </section>
+  <section>
+    <h1>IR</h1>
+    <p><code>isSimple</code>, <code>isVolatile</code>, <code>isAtomic</code>: steer clear</p>
+  </section>
+  <section>
+    <h1>Machine IR</h1>
+    <p>similar to actual ISA instructions</p>
   </section>
 </section>
 
