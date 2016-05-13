@@ -750,12 +750,37 @@ void relaxed() {
     <aside class="notes">Not aware of compilers which do this.</aside>
   </section>
   <section>
+    <h2>Progress bar</h2>
+    <pre class="fragment"><code class="c++" data-noescape>
+atomic&lt;int&gt; progress(0);
+f() {
+    for (i = 0; i < 1000000; ++i) {
+        // Heavy work, no shared memory...
+        ++progress;
+    }
+}
+    </code></pre>
+    <pre class="fragment"><code class="c++" data-noescape>
+atomic&lt;int&gt; progress(0);
+f() {
+    int my_progress = 0; // register allocated
+    for (i = 0; i < 1000000; ++i) {
+        // Heavy work, no shared memory...
+        ++my_progress;
+    }
+    progress += my_progress;
+}
+    </code></pre>
+    <aside class="notes">When should compilers optimize atomics?</aside>
+  </section>
+  <section>
     <h2>Disabling reordering / fusing?</h2>
     <ul>
       <li class="fragment"><code class="c++">asm volatile("":::"memory");</code><code class="fragment c++"> // eek!</code></li>
       <li class="fragment"><code class="c++">std::atomic_signal_fence();</code><code class="fragment c++"> // wat?</code></li>
       <li class="fragment">Use <code class="c++">volatile</code>? <strong class="fragment">NO!</strong></li>
       <li class="fragment">Don't use <code class="c++">relaxed</code>?</li>
+      <li class="fragment">Synchronize-with?</li>
     </ul>
   </section>
   <section>
