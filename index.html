@@ -189,7 +189,7 @@
       <li class="fragment"><code class="c++">acq_rel</code></li>
       <li class="fragment"><code class="c++">seq_cst</code></li>
     </ul>
-    <aside class="notes">Used as constants passed to atomic operations. You can use a runtime variable, but your life will be sad. Actually a lattice.</aside>
+    <aside class="notes">Used as constants passed to atomic operations. You can use a runtime variable, but your life will be sad. Actually a lattice, because cmpxchg.</aside>
   </section>
   <section>
     <h1>Atomic</h1>
@@ -235,7 +235,7 @@
       <li class="fragment"><code class="c++">atomic_thread_fence</code></li>
       <li class="fragment"><code class="c++">atomic_signal_fence</code></li>
     </ul>
-    <aside class="notes">Only really needed with relaxed. Signal fence is basically a compiler barrier.</aside>
+    <aside class="notes">Signal fence is basically a compiler barrier. Exist to order atomic operations that don't enforce ordering. On x86: compiler fences.</aside>
   </section>
   <section>
     <h1>Lock-freedom</h1>
