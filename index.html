@@ -205,6 +205,7 @@
       <li class="fragment"><code class="c++">template&lt;class T&gt; struct atomic;</code></li>
       <li class="fragment"><code class="c++">template&lt;&gt; struct atomic&lt;integral&gt;;</code></li>
       <li class="fragment"><code class="c++">template&lt;class T&gt; struct atomic&lt;T*&gt;;</code></li>
+      <li class="fragment"><code class="c++">template&lt;class T&gt; struct atomic&lt;floating-point&gt;; // future</code></li>
     </ul>
     <aside class="notes">All atomics operations are on atomic objects. Lifetime of memory locations, exclusively atomic or not. Holds a representation of T (alignment, etc).</aside>
   </section>
@@ -236,6 +237,15 @@
       <li class="fragment"><code class="c++">fetch_add</code></li>
       <li class="fragment"><code class="c++">fetch_sub</code></li>
     </ul>
+  </section>
+  <section>
+    <h1>Atomic&lt;floating-point&gt;</h1>
+    <ul>
+      <li class="fragment"><code class="c++">fetch_add</code></li>
+      <li class="fragment"><code class="c++">fetch_sub</code></li>
+      <li class="fragment">More?</li>
+    </ul>
+    <aside class="notes">What can hardware do? Need cmpxchg? What of FP env (round, denorm, etc)?</aside>
   </section>
   <section>
     <h1>Fences</h1>
