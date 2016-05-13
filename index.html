@@ -393,11 +393,11 @@ auto read(Data *d) {
   <section>
     <h1><code class="c++">consume</code> for ARM</h1>
     <p class="fragment">Address dependency rule</p>
-    <pre class="c++"><code class="c++" data-noescape>
+    <pre class="fragment c++"><code class="c++" data-noescape>
 LDR r1, [r0]
 LDR r2, [r1]
     </code></pre>
-    <pre class="c++"><code class="c++" data-noescape>
+    <pre class="fragment c++"><code class="c++" data-noescape>
 LDR r1, [r0]
 AND r1, r1, #0
 LDR r2, [r3, r1]
