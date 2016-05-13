@@ -789,14 +789,15 @@ void relaxed() {
 volatile int foo;
 void bar() { int baz; while (1) baz = foo; }
     </code></pre>
-    <p class="fragment">The implementation may assume that any thread will eventually do one of the following:
-      <ul>
-        <li>terminate,</li>
-        <li>make a call to a library I/O function,</li>
-        <li>access or modify a <code>volatile</code> object, or</li>
-        <li>perform a synchronization operation or an atomic operation.</li>
-      </ul>
-    </p>
+  </section>
+  <section>
+    <p>The implementation may assume that any thread will eventually do one of the following:</p>
+    <ul>
+      <li>terminate,</li>
+      <li>make a call to a library I/O function,</li>
+      <li>access or modify a <code>volatile</code> object, or</li>
+      <li>perform a synchronization operation or an atomic operation.</li>
+    </ul>
     <aside class="notes">From standard section 1.10.</aside>
   </section>
   <section>
