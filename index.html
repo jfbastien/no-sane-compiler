@@ -448,7 +448,12 @@ LDR r2, [r3, r1]
     <h2>What can the compiler do?</h2>
     <p class="fragment">At least as much as the hardware could do</p>
     <p class="fragment">and maybe more 😉</p>
-    <aside class="notes">Is this circular, since HW adapts to the standard?</aside>
+    <aside class="notes">Is this circular, since HW adapts to the standard? Can we optimize assuming there are no races?</aside>
+  </section>
+  <section>
+    <h2>What does hardware do?</h2>
+    <p>We saw a few examples earlier</p>
+    <aside class="notes">What of simulations? QEMU. DBT (with varying optimization, sometimes entertaining bringup bugs such as unrolling busy-wait loop). Virtual ISAs!</aside>
   </section>
 </section>
 
