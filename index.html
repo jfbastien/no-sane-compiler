@@ -558,6 +558,59 @@ T optmetoo(std::atomic&lt;T&gt; *x, T y) {
     <aside class="notes"><p>May not always pay off: architectures with weaker memory models may benefit from having write-after-read operations to the same location instead of having an atomic exchange.</p></aside>
   </section>
   <section>
+    <h1>Interesting problem...</h1>
+    <img class="fragment" src="wonka.jpg" />
+  </section>
+  <section>
+    <h1>Read ; Modify ; Write</h1>
+    <p>Hogwild!: A Lock-Free Approach to Parallelizing Stochastic Gradient Descent</p>
+  </section>
+  <section>
+    <h2>Racy</h2>
+    <pre><code class="c++" data-noescape>
+float y;
+void g(float a) { y += a; }
+    </code></pre>
+    <pre class="fragment"><code class="c++" data-noescape>
+        addss   y(%rip), %xmm0
+        movss   %xmm0, y(%rip)
+    </code></pre>
+  </section>
+  <section>
+    <h2><code>volatile</code></h2>
+    <pre><code class="c++" data-noescape>
+volatile float yv;
+void gv(float a) { yv += a; }
+    </code></pre>
+    <pre class="fragment"><code class="c++" data-noescape>
+        addss   yv(%rip), %xmm0
+        movss   %xmm0, yv(%rip)
+    </code></pre>
+  </section>
+  <section>
+    <h2>Correct?</h2>
+    <pre><code class="c++" data-noescape>
+std::atomic&lt;float&gt; x;
+void f(float a) {
+  x.store(x.load(std::memory_order_relaxed) + a,
+          std::memory_order_relaxed);
+}
+    </code></pre>
+    <pre class="fragment"><code class="c++" data-noescape>
+        movl    x(%rip), %eax
+        movd    %eax, %xmm1
+        addss   %xmm0, %xmm1
+        movd    %xmm1, %eax
+        movl    %eax, x(%rip)
+    </code></pre>
+    <pre class="fragment"><code class="c++" data-noescape>
+        addss   x(%rip), %xmm0
+        movss   %xmm0, x(%rip)
+    </code></pre>
+    <p class="fragment">Optimization FTW!</p>
+    <aside class="notes">Is this correct? All relaxed doesn't guarantee visibility! Add infrequent fence? 3x faster.</aside>
+  </section>
+  <section>
     <h2>Moar!</h2>
     <p class="fragment">Inlining and constant propagation</p>
     <p class="fragment"><code class="c++">atomic&lt;T&gt;::fetch_and(~(T)0)</code> → <code class="c++">atomic&lt;T&gt;::load()</code></p>
