@@ -765,6 +765,23 @@ void relaxed() {
     <p class="fragment">No</p>
   </section>
   <section>
+    <h1>Fun <code>volatile</code> fact</h1>
+    <p>Is this undefined behavior?</p>
+    <pre><code class="c++" data-noescape>
+volatile int foo;
+void bar() { int baz; while (1) baz = foo; }
+    </code></pre>
+    <p class="fragment">The implementation may assume that any thread will eventually do one of the following:
+      <ul>
+        <li>terminate,</li>
+        <li>make a call to a library I/O function,</li>
+        <li>access or modify a <code>volatile</code> object, or</li>
+        <li>perform a synchronization operation or an atomic operation.</li>
+      </ul>
+    </p>
+    <aside class="notes">From standard section 1.10.</aside>
+  </section>
+  <section>
     <h1>Are there portable <code>volatile</code> uses?</h1>
     <ul>
       <li class="fragment">mark local variables in the same scope as a <code>setjmp</code>, preserve value across <code>longjmp</code></li>
