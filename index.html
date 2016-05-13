@@ -391,6 +391,20 @@ auto read(Data *d) {
     <aside class="notes">Hard to implement C++ efficiently on Alpha! Exception that proves the rule?</aside>
   </section>
   <section>
+    <h1><code class="c++">consume</code> for ARM</h1>
+    <p class="fragment">Address dependency rule</p>
+    <pre class="c++"><code class="c++" data-noescape>
+LDR r1, [r0]
+LDR r2, [r1]
+    </code></pre>
+    <pre class="c++"><code class="c++" data-noescape>
+LDR r1, [r0]
+AND r1, r1, #0
+LDR r2, [r3, r1]
+    </code></pre>
+    <aside class="notes">Value returned by read is used to compute virtual address of subsequent read or write, these two memory accesses are observed in program order. Not control dependency on ARM.</aside>
+  </section>
+  <section>
     <h1>Takeaways</h1>
     <ul>
       <li class="fragment">C++ exposes hardware portably</li>
