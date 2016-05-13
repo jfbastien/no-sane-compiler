@@ -142,7 +142,7 @@
         any side effect in the release sequence headed by A, or</li>
       <li>for some evaluation X, A is <em>dependency-ordered before</em> X and X carries a dependency to B.</li>
     </ul>
-    <p class="fragment">[ Note: The relation “is dependency-ordered before” is
+    <p class="fragment" style="font-size: 75%">[ Note: The relation “is dependency-ordered before” is
       analogous to “synchronizes with”, but uses release/consume in place of
       release/acquire. — end note ]
     </p>
@@ -250,6 +250,7 @@
     <p class="fragment">Guaranteed for <code class="c++">std::atomic_flag</code></p>
     <p class="fragment">Roughtly: is there a compare-exchange for this size?</p>
     <p class="fragment">This is what I'm focusing on.</p>
+    <p class="fragment">What does non-lock-free mean?</p>
     <aside class="notes">Why a runtime value? If it's not lock-free, you probably want to use a coarse-grained lock (unless you're lazy and want the implementation's locks).</aside>
   </section>
 </section>
@@ -282,7 +283,7 @@ auto read(Data *d) {
   </section>
   <section>
     <h1>x86-64</h1>
-    <table class="fragment" style="font-size: 75%">
+    <table class="fragment" style="font-size: 65%">
       <tr><td>load <code class="c++">relaxed</code></td><td><code class="x86asm">MOV</code></td></tr>
       <tr><td>load <code class="c++">consume</code></td><td><code class="x86asm">MOV</code></td></tr>
       <tr><td>load <code class="c++">acquire</code></td><td><code class="x86asm">MOV</code></td></tr>
@@ -297,7 +298,7 @@ auto read(Data *d) {
   </section>
   <section>
     <h1>Power</h1>
-    <table class="fragment" style="font-size: 75%">
+    <table class="fragment" style="font-size: 65%">
       <tr><td>load <code class="c++">relaxed</code></td><td><code class="x86asm">ld</code></td></tr>
       <tr><td>load <code class="c++">consume</code></td><td><code class="x86asm">ld + dependencies</code></td></tr>
       <tr><td>load <code class="c++">acquire</code></td><td><code class="x86asm">ld; cmp; bc; isync</code></td></tr>
@@ -313,7 +314,7 @@ auto read(Data *d) {
   </section>
   <section>
     <h1>ARMv7</h1>
-    <table class="fragment" style="font-size: 75%">
+    <table class="fragment" style="font-size: 65%">
       <tr><td>load <code class="c++">relaxed</code></td><td><code class="x86asm">ldr</code></td></tr>
       <tr><td>load <code class="c++">consume</code></td><td><code class="x86asm">ldr + dependencies</code></td></tr>
       <tr><td>load <code class="c++">acquire</code></td><td><code class="x86asm">ldr; dmb</code></td></tr>
@@ -328,7 +329,7 @@ auto read(Data *d) {
   </section>
   <section>
     <h1>ARMv8 A64</h1>
-    <table class="fragment" style="font-size: 75%">
+    <table class="fragment" style="font-size: 65%">
       <tr><td>load <code class="c++">relaxed</code></td><td><code class="x86asm">ldr</code></td></tr>
       <tr><td>load <code class="c++">consume</code></td><td><code class="x86asm">ldr + dependencies</code></td></tr>
       <tr><td>load <code class="c++">acquire</code></td><td><code class="x86asm">ldar</code></td></tr>
@@ -343,7 +344,7 @@ auto read(Data *d) {
   </section>
   <section>
     <h1>Itanium</h1>
-    <table class="fragment" style="font-size: 75%">
+    <table class="fragment" style="font-size: 65%">
       <tr><td>load <code class="c++">relaxed</code></td><td><code class="x86asm">ld.acq</code></td></tr>
       <tr><td>load <code class="c++">consume</code></td><td><code class="x86asm">ld.acq</code></td></tr>
       <tr><td>load <code class="c++">acquire</code></td><td><code class="x86asm">ld.acq</code></td></tr>
