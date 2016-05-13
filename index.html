@@ -217,6 +217,7 @@
       <li class="fragment"><code class="c++">exchange</code></li>
       <li class="fragment"><code class="c++">compare_exchange_{weak,strong}</code></li>
       <li class="fragment"><code class="c++">is_lock_free</code></li>
+      <li class="fragment"><code class="c++">static constexpr is_always_lock_free // C++17</code></li>
     </ul>
     <aside class="notes">Must be trivially copyable; can be structs, but watch out for padding bits! All have atomic ordering (except lock free).</aside>
   </section>
