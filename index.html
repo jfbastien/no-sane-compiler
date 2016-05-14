@@ -259,7 +259,7 @@
   <section>
     <h1>Lock-freedom</h1>
     <p class="fragment">Guaranteed for <code class="c++">std::atomic_flag</code></p>
-    <p class="fragment">Roughtly: is there a compare-exchange for this size?</p>
+    <p class="fragment">Roughly: is there a compare-exchange for this size?</p>
     <p class="fragment">This is what I'm focusing on.</p>
     <p class="fragment">What does non-lock-free mean?</p>
     <aside class="notes">Why a runtime value? If it's not lock-free, you probably want to use a coarse-grained lock (unless you're lazy and want the implementation's locks).</aside>
