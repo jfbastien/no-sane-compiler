@@ -419,7 +419,7 @@ LDR r2, [r3, r1]
   </section>
   <section>
     <h1>Architecture-specific</h1>
-    <p>Same architectrure, different instructions / performance.</p>
+    <p>Same architecture, different instructions / performance.</p>
     <p class="fragment">Flags to the rescue: <code>-march</code>, <code>-mcpu</code>, <code>-mattr</code></p>
     <ul>
       <li class="fragment">Special instructions</li>
@@ -446,7 +446,7 @@ LDR r2, [r3, r1]
   <section>
     <h2><em>as-if</em></h2>
     <p class="fragment"><strong>more atomic</strong>: don’t violate forward progress</p>
-    <p class="fragment"><strong>less atomic</strong>: don’t add non-benign race which weren’t already present</p>
+    <p class="fragment"><strong>less atomic</strong>: don’t add non-benign races which weren’t already present</p>
   </section>
   <section>
     <h2>Put another way</h2>
@@ -526,7 +526,7 @@ bool silly(std::atomic&lt;T&gt; *x, T expected, T desired) {
 template&lt;typename T&gt;
 bool optme(std::atomic&lt;T&gt; *x, T desired) {
   T expected = desired;
-  return x-&gt;compare_exchange_strong(expected, desired
+  return x-&gt;compare_exchange_strong(expected, desired,
     std::memory_order_seq_cst, std::memory_order_relaxed);
 }
   </code></pre>
