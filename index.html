@@ -526,7 +526,7 @@ bool silly(std::atomic&lt;T&gt; *x, T expected, T desired) {
 template&lt;typename T&gt;
 bool optme(std::atomic&lt;T&gt; *x, T desired) {
   T expected = desired;
-  return x-&gt;compare_exchange_strong(expected, desired
+  return x-&gt;compare_exchange_strong(expected, desired,
     std::memory_order_seq_cst, std::memory_order_relaxed);
 }
   </code></pre>
