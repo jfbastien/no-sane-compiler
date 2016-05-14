@@ -38,6 +38,7 @@ A (non-comprehensive) list of references that went into creating this talk.
 * [C/C++11 mappings to processors](https://www.cl.cam.ac.uk/~pes20/cpp/cpp0xmappings.html)
 * [Mathematizing C++ Concurrency](https://www.cl.cam.ac.uk/~mjb220/popl085ap-sewell.pdf)
 * [Threads Cannot be Implemented as a Library](http://www.hpl.hp.com/techreports/2004/HPL-2004-209.pdf)
+* [Common Compiler Optimisations are Invalid in the C11 Memory Model and what we can do about it](http://www.di.ens.fr/~zappa/readings/c11comp.pdf)
 * [ARM Barrier Litmus Tests and Cookbook](http://infocenter.arm.com/help/topic/com.arm.doc.genc007826/Barrier_Litmus_Tests_and_Cookbook_A08.pdf)
 * [DR 476 (C volatile)](http://www.open-std.org/jtc1/sc22/wg14/www/docs/summary.htm#dr_476)
 * [CVE-2015-8550 paravirtualized drivers incautious about shared memory contents](http://xenbits.xen.org/xsa/advisory-155.html)
