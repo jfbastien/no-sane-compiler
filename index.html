@@ -29,7 +29,6 @@
   <section>
     <h1>No Sane Compiler Would Optimize Atomics</h1>
     <p>JF Bastien &lt;<a href="https://twitter.com/jfbastien">@jfbastien</a>&gt;</p>
-    <p>Compiler engineer on Chrome</p>
   </section>
   <section>
     <strong><code class="c++" style="font-size: 400%">false</code></strong>
@@ -41,10 +40,6 @@
   <section>
     <h1>Disclaimer</h1>
     <aside class="notes">Peek under the hood. Prefer higher-level primitives (parallelism TS, mutex, etc).</aside>
-  </section>
-  <section>
-    <h1>Why do I care?</h1>
-    <aside class="notes">Virtual ISAs such as WebAssembly, and *gasp* JavaScript. Oh and it’s fun to make code faster!</aside>
   </section>
 </section>
 
@@ -78,101 +73,8 @@
     <aside class="notes">You should use address sanitizer</aside>
   </section>
   <section>
-    <h1>Memory locations</h1>
-    <p class="fragment">Either an object of <em>scalar type</em> or a maximal
-        sequence of adjacent bit-fields all having non-zero width.</p>
-    <p class="fragment">Arithmetic types, enumeration types, pointer types,
-      pointer to member types, <code class="c++">std::nullptr_t</code>, and
-      cv-qualified versions of these types are collectively called <em>scalar
-      types</em>.
-    </p>
-    <aside class="notes">Also, address-freedom</aside>
-  </section>
-  <section>
-    <h1>Ordering memory locations</h1>
-    <p class="fragment">Two memory operations are ordered if they cannot occur simultaneously</p>
-    <aside class="notes">That sounds simple!</aside>
-  </section>
-  <section>
-    <h1>Ordering memory locations</h1>
-    <p class="fragment">An evaluation A <em>happens before</em> an evaluation B if:
-      <ul class="fragment">
-        <li>A is <em>sequenced before</em> B, or</li>
-        <li>A <em>inter-thread happens before</em> B</li>
-      </ul>
-    </p>
-    <aside class="notes">More precisely...</aside>
-  </section>
-  <section>
-    <h1>Sequenced before</h1>
-    <p class="fragment">An asymmetric, transitive, pair-wise relation between
-      evaluations executed by a single thread, which induces a partial order
-      among those evaluations. Given any two evaluations A and B, if A
-      is <em>sequenced before</em> B, then the execution of A shall precede the
-      execution of B. If A is not <em>sequenced before</em> B and B is not
-      <em>sequenced before</em> A, then A and B are <em>unsequenced</em>.
-    </p>
-  </section>
-  <section>
-    <h1>Inter-thread happens before</h1>
-    <ul class="fragment">
-      <li>A <em>synchronizes with</em> B, or</li>
-      <li>A is <em>dependency-ordered before</em> B, or</li>
-      <li>for some evaluation X
-        <ul>
-          <li>A <em>synchronizes with</em> X and X is <em>sequenced before</em> B, or</li>
-          <li>A is <em>sequenced before</em> X and X <em>inter-thread happens before</em> B, or</li>
-          <li>A <em>inter-thread happens before</em> X and X <em>inter-thread happens before</em> B.</li>
-        </ul>
-    </ul>
-  </section>
-  <section>
-    <h1>Synchronizes with</h1>
-    <p class="fragment">An atomic operation A that performs a release operation
-      on an atomic object M <em>synchronizes with</em> an atomic operation B
-      that performs an acquire operation on M and takes its value from any side
-      effect in the release sequence headed by A.
-    </p>
-  </section>
-  <section>
-    <h1>Dependency-ordered before</h1>
-    <ul class="fragment">
-      <li>A performs a release operation on an atomic object M, and, in another
-        thread, B performs a consume operation on M and reads a value written by
-        any side effect in the release sequence headed by A, or</li>
-      <li>for some evaluation X, A is <em>dependency-ordered before</em> X and X carries a dependency to B.</li>
-    </ul>
-    <p class="fragment" style="font-size: 75%">[ Note: The relation “is dependency-ordered before” is
-      analogous to “synchronizes with”, but uses release/consume in place of
-      release/acquire. — end note ]
-    </p>
-  </section>
-  <section>
-    <h1>Synchronization operation</h1>
-    <ul>
-      <li class="fragment">On one or more memory locations: consume operation,
-        an acquire operation, a release operation, or both an acquire and
-        release operation.</li>
-      <li class="fragment">Without an associated memory location: acquire fence,
-        release fence, or both an acquire and release fence.</li>
-    </ul>
-    <aside class="notes">Also: relaxed atomic operations are not synchronization operations; atomic read-modify-write operations have special characteristics.</aside>
-  </section>
-  <section>
     <h1>[intro.multithread]</h1>
     <p class="fragment">1.10 Multi-threaded executions and data races</p>
-    <aside class="notes">Also defines: thread of execution, forward-progress, etc.</aside>
-  </section>
-  <section>
-    <h1>Thread support</h1>
-    <ul>
-      <li class="fragment"><code class="c++">std::thread</code></li>
-      <li class="fragment"><code class="c++">std::mutex</code></li>
-      <li class="fragment"><code class="c++">std::shared_mutex</code></li>
-      <li class="fragment"><code class="c++">std::condition_variable</code></li>
-      <li class="fragment"><code class="c++">std::future</code></li>
-    </ul>
-    <aside class="notes">I'll ignore these for the rest of the presentation.</aside>
   </section>
   <section>
     <h1>Atomic operations</h1>
@@ -211,48 +113,48 @@
   </section>
   <section>
     <h1>Atomic&lt;T&gt;</h1>
-    <ul>
-      <li class="fragment"><code class="c++">load</code></li>
-      <li class="fragment"><code class="c++">store</code></li>
-      <li class="fragment"><code class="c++">exchange</code></li>
-      <li class="fragment"><code class="c++">compare_exchange_{weak,strong}</code></li>
-      <li class="fragment"><code class="c++">is_lock_free</code></li>
-      <li class="fragment"><code class="c++">static constexpr is_always_lock_free // C++17</code></li>
+    <ul class="fragment">
+      <li><code class="c++">load</code></li>
+      <li><code class="c++">store</code></li>
+      <li><code class="c++">exchange</code></li>
+      <li><code class="c++">compare_exchange_{weak,strong}</code></li>
+      <li><code class="c++">is_lock_free</code></li>
+      <li><code class="c++">static constexpr is_always_lock_free // C++17</code></li>
     </ul>
     <aside class="notes">Must be trivially copyable; can be structs, but watch out for padding bits! All have atomic ordering (except lock free).</aside>
   </section>
   <section>
     <h1>Atomic&lt;integral&gt;</h1>
-    <ul>
-      <li class="fragment"><code class="c++">fetch_add</code></li>
-      <li class="fragment"><code class="c++">fetch_sub</code></li>
-      <li class="fragment"><code class="c++">fetch_and</code></li>
-      <li class="fragment"><code class="c++">fetch_or</code></li>
-      <li class="fragment"><code class="c++">fetch_xor</code></li>
+    <ul class="fragment">
+      <li><code class="c++">fetch_add</code></li>
+      <li><code class="c++">fetch_sub</code></li>
+      <li><code class="c++">fetch_and</code></li>
+      <li><code class="c++">fetch_or</code></li>
+      <li><code class="c++">fetch_xor</code></li>
     </ul>
     <aside class="notes">Some shorthands (without ordering) and coercions; integers are two's complement (no UB!).</aside>
   </section>
   <section>
     <h1>Atomic&lt;T*&gt;</h1>
-    <ul>
-      <li class="fragment"><code class="c++">fetch_add</code></li>
-      <li class="fragment"><code class="c++">fetch_sub</code></li>
+    <ul class="fragment">
+      <li><code class="c++">fetch_add</code></li>
+      <li><code class="c++">fetch_sub</code></li>
     </ul>
   </section>
   <section>
     <h1>Atomic&lt;floating-point&gt;</h1>
-    <ul>
-      <li class="fragment"><code class="c++">fetch_add</code></li>
-      <li class="fragment"><code class="c++">fetch_sub</code></li>
-      <li class="fragment">More?</li>
+    <ul class="fragment">
+      <li><code class="c++">fetch_add</code></li>
+      <li><code class="c++">fetch_sub</code></li>
+      <li>More?</li>
     </ul>
     <aside class="notes">What can hardware do? Need cmpxchg? What of FP env (round, denorm, etc)?</aside>
   </section>
   <section>
     <h1>Fences</h1>
-    <ul>
-      <li class="fragment"><code class="c++">atomic_thread_fence</code></li>
-      <li class="fragment"><code class="c++">atomic_signal_fence</code></li>
+    <ul class="fragment">
+      <li><code class="c++">atomic_thread_fence</code></li>
+      <li><code class="c++">atomic_signal_fence</code></li>
     </ul>
     <aside class="notes">Signal fence is basically a compiler barrier. Exist to order atomic operations that don't enforce ordering. On x86: compiler fences.</aside>
   </section>
@@ -329,14 +231,14 @@ auto read(Data *d) {
       <tr><td>load <code class="c++">relaxed</code></td><td><code class="x86asm">ldr</code></td></tr>
       <tr><td>load <code class="c++">consume</code></td><td><code class="x86asm">ldr + dependencies</code></td></tr>
       <tr><td>load <code class="c++">acquire</code></td><td><code class="x86asm">ldr; dmb</code></td></tr>
-      <tr><td>load <code class="c++">seq_cst</code></td><td><code class="x86asm">lrd; dmb</code></td></tr>
+      <tr><td>load <code class="c++">seq_cst</code></td><td><code class="x86asm">ldr; dmb</code></td></tr>
       <tr><td>store <code class="c++">relaxed</code></td><td><code class="x86asm">str</code></td></tr>
       <tr><td>store <code class="c++">release</code></td><td><code class="x86asm">dmb; str</code></td></tr>
       <tr><td>store <code class="c++">seq_cst</code></td><td><code class="x86asm">dmb; str; dmb</code></td></tr>
       <tr><td><code class="c++">cmpxchg relaxed</code></td><td><code class="x86asm">_loop: ldrex; mov 0; teq; strexeq; teq 0; bne _loop</code></td></tr>
       <tr><td>fences</td><td><code class="x86asm">dmb</code></td></tr>
     </table>
-    <aside class="notes">Similar to Power, same for MIPS. 64-bit is slightly horrible; has ldrexd; sometimes ldrd is single-copy atomic.</aside>
+    <aside class="notes">Similar to Power, same for MIPS. 64-bit is slightly horrible; has ldrexd; sometimes ldrd is single-copy atomic. Many dmbs</aside>
   </section>
   <section>
     <h1>ARMv8 A64</h1>
@@ -873,24 +775,6 @@ f() {
     <p class="fragment">No</p>
   </section>
   <section>
-    <h1>Fun <code>volatile</code> fact</h1>
-    <p>Is this undefined behavior?</p>
-    <pre><code class="c++" data-noescape>
-volatile int foo;
-void bar() { int baz; while (1) baz = foo; }
-    </code></pre>
-  </section>
-  <section>
-    <p>The implementation may assume that any thread will eventually do one of the following:</p>
-    <ul>
-      <li>terminate,</li>
-      <li>make a call to a library I/O function,</li>
-      <li>access or modify a <code>volatile</code> object, or</li>
-      <li>perform a synchronization operation or an atomic operation.</li>
-    </ul>
-    <aside class="notes">From standard section 1.10.</aside>
-  </section>
-  <section>
     <h1>Are there portable <code>volatile</code> uses?</h1>
     <ul>
       <li class="fragment">mark local variables in the same scope as a <code>setjmp</code>, preserve value across <code>longjmp</code></li>
@@ -904,12 +788,6 @@ void bar() { int baz; while (1) baz = foo; }
     <p>what's that?</p>
     <aside class="notes">Both! Adds atomic as in greek to volatile. Beware lock-free: what happens to address-free with shared mmemory?</aside>
   </section>
-</section>
-
-<section>
-  <h1>Non-temporals</h1>
-  <p class="fragment">“nope nope nope nope nope nope nope nope nope nope nope nope nope nope nope nope nope nope nope nope nope nope nope nope nope n” — Steve Canon</p>
-  <aside class="notes">Not standard, in x86 and ARMv8, write-through instead of write-back, atomic fences don't order them.</aside>
 </section>
 
 <section>
@@ -1018,8 +896,8 @@ void bar() { int baz; while (1) baz = foo; }
                                 transitionSpeed: 'default', // default/fast/slow
                                 backgroundTransition: 'default', // none/fade/slide/convex/concave/zoom
                                 viewDistance: 3, // Number of slides away from the current that are visible
-                                parallaxBackgroundImage: 'bg.jpg',
-                                parallaxBackgroundSize: '2559px 1510px', // CSS syntax, e.g. "2100px 900px"
+                                //parallaxBackgroundImage: 'bg.jpg',
+                                //parallaxBackgroundSize: '2559px 1510px', // CSS syntax, e.g. "2100px 900px"
                                 // Number of pixels to move the parallax background per slide
                                 // - Calculated automatically unless specified
                                 // - Set to 0 to disable movement along an axis
