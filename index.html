@@ -38,12 +38,23 @@
   </section>
   <section>
     <h1>Disclaimer</h1>
+    <img src="lock-free.gif" style="zoom:70%; border:none" />
     <aside class="notes">Peek under the hood. Prefer higher-level primitives (parallelism TS, mutex, etc).</aside>
   </section>
 
-  <section><h1>Quick review</h1></section>
   <section>
-    <p>C++11 added</p>
+    <h2>When to go lock-free?</h2>
+    <img src="lock-free.svg" style="border:none" />
+    <aside class="notes">
+      From Fedor Pikus' talk earlier this week "The speed of concurrency (is lock-free faster?)".
+      Note: "does it work" has two "no" branches... That was inadvertent snark!
+      Also see Hans Boehm's talk "Using weakly ordered C++ atomics correctly".
+    </aside>
+  </section>
+
+  <section><h1>Quick Review</h1></section>
+  <section>
+    <h2>C++11 added</h2>
     <ul>
       <li class="fragment">A memory model</li>
       <li class="fragment">Threads</li>
@@ -54,9 +65,10 @@
   <section>
     <h1>Sequential Consistency</h1>
     <p class="fragment">Naïve model: memory accesses are simply interleaved</p>
+    <img class="fragment" src="zipper.gif" style="zoom:50%; border:none" />
     <p class="fragment">Hardware doesn't work that way</p>
     <p class="fragment">Overly restrictive</p>
-    <aside class="notes">Limits compiler + HW reordering / optimizations; access granularity; want to reason about atomic code regions</aside>
+    <aside class="notes">Limits compiler + HW reordering / optimizations; access granularity; want to reason about atomic code regions; fences cost 2 to 200 cycles depending on architecture</aside>
   </section>
   <section>
     <h1>SC-DRF</h1>
@@ -81,31 +93,36 @@
   <section>
     <h1>Memory order</h1>
     <ul>
-      <li class="fragment"><code class="c++">relaxed</code></li>
-      <li class="fragment"><code class="c++">consume</code></li>
-      <li class="fragment"><code class="c++">acquire</code></li>
-      <li class="fragment"><code class="c++">release</code></li>
-      <li class="fragment"><code class="c++">acq_rel</code></li>
-      <li class="fragment"><code class="c++">seq_cst</code></li>
+      <li><code class="c++">relaxed</code></li>
+      <li><code class="c++">consume</code></li>
+      <li><code class="c++">acquire</code></li>
+      <li><code class="c++">release</code></li>
+      <li><code class="c++">acq_rel</code></li>
+      <li><code class="c++">seq_cst</code></li>
     </ul>
-    <aside class="notes">Used as constants passed to atomic operations. You can use a runtime variable, but your life will be sad. Actually a lattice, because cmpxchg.</aside>
+    <aside class="notes">Used as constants passed to atomic operations. You can use a runtime variable, but your life will be sad. Actually a lattice, because cmpxchg, though we may change that in the standard, see http://wg21.link/p0418 when published.</aside>
   </section>
   <section>
     <h1><code class="c++">relaxed</code></h1>
-    <li class="fragment">racing accesses</li>
-    <li class="fragment">indivisible</li>
-    <li class="fragment">enforce cache coherency</li>
-    <li class="fragment">doesn't guarantee visibility</li>
+    <p class="fragment">racing accesses</p>
+    <p class="fragment">indivisible</p>
+    <p class="fragment">enforce cache coherency</p>
+    <p class="fragment">doesn't guarantee visibility</p>
     <aside class="notes">Location may be concurrently modified, refrain from optimizations that will break if it is. Cache coherence: single-variable ordering, implicit on most architectures, but requires ld.acq on Itanium.</aside>
   </section>
   <section>
+    <h1><code class="c++">relaxed</code></h1>
+    <p class="fragment">“C++14 replaced the offensive wording with hand waving”</p>
+    <p class="fragment">“it's probably incorrect if you care about the result”</p>
+    <p class="fragment">— Hans Boehm</p>
+    <aside class="notes">Paraphrasing Hans Boehm's talk yesterday.</aside>
+  </section>
+  <section>
     <h1>Atomic</h1>
-    <ul>
-      <li class="fragment"><code class="c++">template&lt;class T&gt; struct atomic;</code></li>
-      <li class="fragment"><code class="c++">template&lt;&gt; struct atomic&lt;integral&gt;;</code></li>
-      <li class="fragment"><code class="c++">template&lt;class T&gt; struct atomic&lt;T*&gt;;</code></li>
-      <li class="fragment"><code class="c++">template&lt;class T&gt; struct atomic&lt;floating-point&gt;; // future</code></li>
-    </ul>
+      <p class="fragment"><code class="c++">template&lt;class T&gt;<br>struct atomic;</code></p>
+      <p class="fragment"><code class="c++">template&lt;&gt;<br>struct atomic&lt;integral&gt;;</code></p>
+      <p class="fragment"><code class="c++">template&lt;class T&gt;<br>struct atomic&lt;T*&gt;;</code></p>
+      <p class="fragment"><code class="c++">template&lt;class T&gt;<br>struct atomic&lt;floating-point&gt;; // future</code></p>
     <aside class="notes">All atomics operations are on atomic objects. Lifetime of memory locations, exclusively atomic or not. Holds a representation of T (alignment, etc).</aside>
   </section>
   <section>
@@ -116,7 +133,7 @@
       <li><code class="c++">exchange</code></li>
       <li><code class="c++">compare_exchange_{weak,strong}</code></li>
       <li><code class="c++">is_lock_free</code></li>
-      <li><code class="c++">static constexpr is_always_lock_free // C++17</code></li>
+      <li><code class="c++">static constexpr is_always_lock_free</code></li>
     </ul>
     <aside class="notes">Must be trivially copyable; can be structs, but watch out for padding bits! All have atomic ordering (except lock free).</aside>
   </section>
@@ -145,7 +162,7 @@
       <li><code class="c++">fetch_sub</code></li>
       <li>More?</li>
     </ul>
-    <aside class="notes">What can hardware do? Need cmpxchg? What of FP env (round, denorm, etc)?</aside>
+    <aside class="notes">What can hardware do? FMA? Need cmpxchg? What of FP env (round, denorm, etc)? What's useful? See http://wg21.link/p0020</aside>
   </section>
   <section>
     <h1>Fences</h1>
@@ -165,7 +182,7 @@
   </section>
 
   <section>
-    <h1>Simple single producer / consumer</h1>
+    <h1>Simple usage</h1>
     <pre class="fragment"><code class="c++" data-noescape>
 struct Data { int spam, bacon, eggs; std::atomic&lt;int&gt; ready; };
 void write(Data *d) {
@@ -179,13 +196,14 @@ auto read(Data *d) {
   return std::make_tuple(d-&gt;spam, d-&gt;bacon, d-&gt;eggs);
 }
     </code></pre>
+    <aside class="notes">For illustration only, this isn't great code! Only certain variables are atomic, despite the entire struct beign accessed by the two threads.</aside>
   </section>
 
   <section>
     <h1>We have our tools!</h1>
     <p class="fragment">Why is the language set up this way?</p>
     <p class="fragment">Provide an abstraction for relevant hardware platforms.</p>
-    <aside class="notes">Let's look at a few architectures.</aside>
+    <aside class="notes">Let's look at a few architectures. For more details see https://www.cl.cam.ac.uk/~pes20/cpp/cpp0xmappings.html or your neighborhood compiler.</aside>
   </section>
   <section>
     <h1>x86-64</h1>
@@ -200,7 +218,7 @@ auto read(Data *d) {
       <tr><td>non-<code class="c++">seq_cst</code> fence</td><td><code class="x86asm"># free!</code></td></tr>
       <tr><td><code class="c++">seq_cst</code> fence</td><td><code class="x86asm">MFENCE</code></td></tr>
     </table>
-    <aside class="notes">Not mentioning RMW / cmpxchg.</aside>
+    <aside class="notes">Not mentioning RMW / cmpxchg. Why the fence? Loads may be reordered with older stores to different locations.</aside>
   </section>
   <section>
     <h1>Power</h1>
@@ -231,7 +249,7 @@ auto read(Data *d) {
       <tr><td><code class="c++">cmpxchg relaxed</code></td><td><code class="x86asm">_loop: ldrex; mov 0; teq; strexeq; teq 0; bne _loop</code></td></tr>
       <tr><td>fences</td><td><code class="x86asm">dmb</code></td></tr>
     </table>
-    <aside class="notes">Similar to Power, same for MIPS. 64-bit is slightly horrible; has ldrexd; sometimes ldrd is single-copy atomic. Many dmbs</aside>
+    <aside class="notes">Similar to Power, same for MIPS. 64-bit is slightly horrible; has ldrexd; sometimes ldrd is single-copy atomic. Many dmbs. "dmb sy" is system-wide (too strong for C++), "dmb ish" is often what you want. ARM has other barrier instructions as well!</aside>
   </section>
   <section>
     <h1>ARMv8 A64</h1>
@@ -265,7 +283,7 @@ auto read(Data *d) {
   </section>
   <section>
     <h1>Alpha</h1>
-    <div class="fragment" style="font-size: 50%; text-align: left">
+    <div class="fragment" style="font-size: 45%; text-align: justify">
     <p>Oh, one of my favorite (NOT!) pieces of code in the kernel is the
       implementation of the <code>smp_read_barrier_depends()</code> macro, which
       on every single architecture except for one (alpha) is a no-op.</p>
@@ -294,12 +312,13 @@ auto read(Data *d) {
       and without the read barrier, you may get a stale version from the cache
       even if the writes were forced (by the write barrier in the writer) to
       happen in the right order.</p>
+    <p>— Linus Torvalds</p>
     </div>
     <aside class="notes">Hard to implement C++ efficiently on Alpha! Exception that proves the rule?</aside>
   </section>
   <section>
-    <h1><code class="c++">consume</code> for ARM</h1>
-    <p class="fragment">Address dependency rule</p>
+    <h1><code class="c++">consume</code></h1>
+    <p class="fragment">ARM address dependency rule</p>
     <pre class="fragment c++"><code class="c++" data-noescape>
 LDR r1, [r0]
 LDR r2, [r1]
@@ -310,7 +329,31 @@ AND r1, r1, #0
 LDR r2, [r3, r1]
     </code></pre>
     <p class="fragment">Look ma, no barrier!</p>
-    <aside class="notes">Value returned by read is used to compute virtual address of subsequent read or write, these two memory accesses are observed in program order. Not control dependency on ARM.</aside>
+    <aside class="notes">Value returned by read is used to compute virtual address of subsequent read or write, these two memory accesses are observed in program order. Not control dependency on ARM. See "Barrier Litmus Tests and Cookbook". See http://wg21.link/p0190 consume isn't implemented because dependencies aren't how compilers work.</aside>
+  </section>
+  <section>
+    <h1><code class="c++">consume</code> maybe?</h1>
+    <pre class="fragment c++"><code class="c++" data-noescape>
+template &lt;typename T&gt; auto consumeLoad(const T* location) {
+    using Returned = typename std::remove_cv&lt;T&gt;::type;
+    struct Consumed { Returned value; size_t dependency; } ret{};
+    ret.value = reinterpret_cast&lt;const volatile std::atomic&lt;Returned&gt;*&gt;(
+          location)-&gt;load(std::memory_order_relaxed);
+#if CPU(ARM)
+    asm volatile("eor %[dependency], %[in], %[in]"
+                 : [dependency] "=r"(ret.dependency)
+                 : [in] "r"(ret.value)
+                 : "memory");
+#else
+    std::atomic_thread_fence(std::memory_order_acquire);
+    ret.dependency = 0;
+#endif
+    return ret;
+}
+    </code></pre>
+    <p><span  class="fragment"><small>“looks like it probably works” — Richard Smith</small><br></span>
+    <span class="fragment"><small>“(other than the aliasing violation)”</small></span></p>
+    <aside class="notes">The actual code is more complicated.</aside>
   </section>
   <section>
     <h1>Architecture-specific</h1>
@@ -451,7 +494,7 @@ T optmetoo(std::atomic&lt;T&gt; *x, T y) {
   </section>
   <section>
     <h1>Interesting problem...</h1>
-    <img class="fragment" src="wonka.jpg" />
+    <img class="fragment" src="wonka.jpg" style="border:none" />
   </section>
   <section>
     <h1>Read ; Modify ; Write</h1>
@@ -607,7 +650,7 @@ do {
   </section>
   <section>
     <h2>What's better?</h2>
-    <img src="seqlock.png" />
+    <img src="seqlock.png" style="border:none" />
     <aside class="notes"><p>`mfence` is 3.5× slower. On POWER RdMW is faster but doesn't scale with number of threads.</p></aside>
   </section>
 
@@ -659,7 +702,7 @@ f() {
     progress += my_progress;
 }
     </code></pre>
-    <aside class="notes">When should compilers optimize atomics?</aside>
+    <aside class="notes">When should compilers optimize atomics? We added non-normative wording to C++17 to discourage this.</aside>
   </section>
   <section>
     <h2>Disabling reordering / fusing?</h2>
@@ -762,7 +805,7 @@ f() {
       <li class="fragment"><strong>externally modified</strong>: physical memory mapped in multiple virtual addresses</li>
       <li class="fragment"><code>volatile sigatomic_t</code> may be used to communicate with a signal handler in the same thread</li>
     </ul>
-    <aside class="notes">Note for signals: need Plain Old Function, very arbitrary, will change in C++17.</aside>
+    <aside class="notes">THis is pretty debatable! Note for signals: need Plain Old Function, very arbitrary, will change in C++17.</aside>
   </section>
   <section>
     <h1><code>volatile atomic</code></h1>
