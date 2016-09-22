@@ -25,7 +25,6 @@
                 <div class="reveal">
                         <div class="slides">
 
-<section>
   <section>
     <h1>No Sane Compiler Would Optimize Atomics</h1>
     <p>JF Bastien &lt;<a href="https://twitter.com/jfbastien">@jfbastien</a>&gt;</p>
@@ -41,9 +40,7 @@
     <h1>Disclaimer</h1>
     <aside class="notes">Peek under the hood. Prefer higher-level primitives (parallelism TS, mutex, etc).</aside>
   </section>
-</section>
 
-<section>
   <section><h1>Quick review</h1></section>
   <section>
     <p>C++11 added</p>
@@ -166,9 +163,7 @@
     <p class="fragment">What does non-lock-free mean?</p>
     <aside class="notes">Why a runtime value? If it's not lock-free, you probably want to use a coarse-grained lock (unless you're lazy and want the implementation's locks).</aside>
   </section>
-</section>
 
-<section>
   <section>
     <h1>Simple single producer / consumer</h1>
     <pre class="fragment"><code class="c++" data-noescape>
@@ -185,9 +180,7 @@ auto read(Data *d) {
 }
     </code></pre>
   </section>
-</section>
 
-<section>
   <section>
     <h1>We have our tools!</h1>
     <p class="fragment">Why is the language set up this way?</p>
@@ -341,9 +334,7 @@ LDR r2, [r3, r1]
     </ul>
     <aside class="notes">Portability is hard. Compiler should know best. C++ is higher level than asm. Operating on data instead of code is contended.</aside>
   </section>
-</section>
 
-<section>
   <section><h1>How do we optimize atomics?</h1></section>
   <section>
     <h2><em>as-if</em></h2>
@@ -368,9 +359,7 @@ LDR r2, [r3, r1]
     <p>We saw a few examples earlier</p>
     <aside class="notes">What of simulations? QEMU. DBT (with varying optimization, sometimes entertaining bringup bugs such as unrolling busy-wait loop). Virtual ISAs!</aside>
   </section>
-</section>
 
-<section>
   <section><h2>Simple example</h2>
   <pre class="fragment"><code class="c++" data-noescape>
 void inc(std::atomic&lt;int&gt; *y) {
@@ -532,9 +521,7 @@ void f(float a) {
     <p>What if the compiler emits suboptimal code?</p>
     <h2 class="fragment">File a bug!</h2>
   </section>
-</section>
 
-<section>
   <section>
     <h1>Sequence lock</h1>
     <ul>
@@ -623,9 +610,7 @@ do {
     <img src="seqlock.png" />
     <aside class="notes"><p>`mfence` is 3.5× slower. On POWER RdMW is faster but doesn't scale with number of threads.</p></aside>
   </section>
-</section>
 
-<section>
   <section>
     <h2>"Normal" compiler optimizations</h2>
     <p class="fragment">Dead store elimination?</p>
@@ -697,9 +682,7 @@ f() {
     </ul>
     <aside class="notes">Compilers already know about "read-only" functions.</aside>
   </section>
-</section>
 
-<section>
   <section>
     <h1><code class="c++">std::mutex</code> for sanity</h1>
     <ul>
@@ -719,9 +702,7 @@ f() {
     <p class="fragment">Knows better</p>
     <aside class="notes">Backoff strategies are HW and OS specific. Atomics don't solve all problems.</aside>
   </section>
-</section>
 
-<section>
   <section>
     <h1><code class="c++">volatile</code></h1>
     <p class="fragment">Initial motivation: <code class="c++">getChar()</code> on PDP-11, reading memory-mapped <code>KBD_STAT</code> I/O register</p>
@@ -788,9 +769,7 @@ f() {
     <p>what's that?</p>
     <aside class="notes">Both! Adds atomic as in greek to volatile. Beware lock-free: what happens to address-free with shared mmemory?</aside>
   </section>
-</section>
 
-<section>
   <section>
     <h1>What do compilers do?</h1>
     <p>by compilers I mean clang</p>
@@ -829,9 +808,7 @@ f() {
     <h1>Machine IR</h1>
     <p>similar to actual ISA instructions</p>
   </section>
-</section>
 
-<section>
   <section><h1>Now what?</h1></section>
   <section>
     <h1>Standards Committee</h1>
@@ -854,7 +831,6 @@ f() {
     <h1>Compiler writers</h1>
     <p>Get back to work!</p>
   </section>
-</section>
 
 <section>
   <h1>Sane Compilers Should Optimize Atomics</h1>
