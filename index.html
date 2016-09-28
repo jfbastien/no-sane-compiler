@@ -607,8 +607,8 @@ void writer(T d1, T d2) {
     <aside class="notes"><p>Relaxed can be reordered with each other; fence is heavy on some architectures; acquire over-constrains (prevents motion into critical section); not intuitive.</p></aside>
   </section>
   <section>
-    <p>We <em>really</em> want a release store</p>
-    <p class="fragment">(there is no release store)</p>
+    <p>We <em>really</em> want a release load</p>
+    <p class="fragment">(there is no release load)</p>
   </section>
   <section>
     <h2>Read-don’t-modify-write</h2>
