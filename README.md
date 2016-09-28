@@ -23,11 +23,11 @@ This talk is based on a paper I wrote for the C++ standards committee,
 won't believe how there's actual content hiding behind the snark!
 
 View the presentation:
-[jfbastien.github.io/no-sane-compiler](https://jfbastien.github.io/no-sane-compiler).
+[jfbastien.github.io/no-sane-compiler](https://jfbastien.github.io/no-sane-compiler) (press **S** for speaker notes, use **←** and **→** to navigate backward / forward).
 
-The talk was given at [C++Now 2016](http://cppnow.org/program-2016). It's [on YouTube](https://youtu.be/igLZkoeTPgA).
+The talk was given at [C++Now 2016](http://cppnow.org/program-2016). It's [on YouTube](https://youtu.be/igLZkoeTPgA) but the recording isn't great.
 
-It was then given at [CppCon 2016](https://cppcon2016.sched.org/speaker/jfb_). The talk was also recorded and will be on YouTube soon.
+It was then given at [CppCon 2016](https://cppcon2016.sched.org/speaker/jfb_). The talk was also recorded and will be on YouTube soon, with much better recording.
 
 ## References
 
