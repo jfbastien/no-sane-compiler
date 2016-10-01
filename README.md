@@ -25,9 +25,9 @@ won't believe how there's actual content hiding behind the snark!
 View the presentation:
 [jfbastien.github.io/no-sane-compiler](https://jfbastien.github.io/no-sane-compiler) (press **S** for speaker notes, use **←** and **→** to navigate backward / forward).
 
-The talk was given at [C++Now 2016](http://cppnow.org/program-2016). It's [on YouTube](https://youtu.be/igLZkoeTPgA) but the recording isn't great.
+The talk was given at [CppCon 2016](https://cppcon2016.sched.org/speaker/jfb_) and is [available on YouTube](https://youtu.be/IB57wIf9W1k).
 
-It was then given at [CppCon 2016](https://cppcon2016.sched.org/speaker/jfb_). The talk was also recorded and will be on YouTube soon, with much better recording.
+<small>It was previously given at [C++Now 2016](http://cppnow.org/program-2016), is also [on YouTube](https://youtu.be/igLZkoeTPgA) but the recording isn't great.</small>
 
 ## References
 
